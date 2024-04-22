@@ -12,12 +12,25 @@ class myApp(tk.Tk):
         self.createMenu()
 
     def mainFrame(self):
-        lbl_title = tk.Label(self, bd=20, relief=tk.RIDGE, text="<  Date here  >", fg="blue", bg="linen",
+        #Top frame widgets
+        lbl_title = tk.Label(self, bd=20, relief=tk.FLAT, text="Date here", fg="blue", bg="linen",
                              font=("times new roman", 20, "bold"))
         lbl_title.pack(side=tk.TOP, fill=tk.X)
         
-        mainFrame = tk.Frame(self, bd=20, relief=tk.RIDGE)
+        mainFrame = tk.Frame(self, bd=20, relief=tk.FLAT)
         mainFrame.place(x=0, y=75, width=500, height=525)
+        
+        
+        btn_search = tk.Button(self, text="⌕",font=("arial", 20), fg="white", bg="green", command=self.search)
+        btn_search.place(x=450, y=20, width=30, height=30)
+
+        #Button on the left side of date 
+        btn_date_left = tk.Button(self, text="<",font=("arial", 10), fg="black", bg="white", command=self.search)
+        btn_date_left.place(x=140, y=20, width=30, height=30)
+        
+        #Button on the right side of date 
+        btn_date_right = tk.Button(self, text=">", font=("arial", 10), fg="black", bg="white", command=self.search)
+        btn_date_right.place(x=330, y=20, width=30, height=30)
 
     def createMenu(self):
         menubar = tk.Menu(self)
@@ -33,6 +46,10 @@ class myApp(tk.Tk):
         
         # Configure the menubar
         self.config(menu=menubar)
+    
+    def search(self):
+        # Implement your export logic here
+        pass
         
     def export_records(self):
         # Implement your export logic here
