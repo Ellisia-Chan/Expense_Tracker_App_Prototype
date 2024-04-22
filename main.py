@@ -66,6 +66,5 @@ class myApp(tk.Tk):
     def about(self):
         messagebox.showinfo("About", "Pera ko\nv1.0\nDeveloped by:\nChristianJude23 & owenlim225")
 
-
 app = myApp()
 app.mainloop()
