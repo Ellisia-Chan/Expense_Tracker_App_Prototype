@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox, filedialog, simpledialog
 
 class myApp(tk.Tk):
     def __init__(self):
@@ -46,8 +47,8 @@ class myApp(tk.Tk):
         pass
     
     def about(self):
-    # Implement your delete logic here
-        pass
+        messagebox.showinfo("About", "Pera ko\nv1.0\nDeveloped by:\nChristianJude23 & owenlim225")
+
 
 app = myApp()
 app.mainloop()
