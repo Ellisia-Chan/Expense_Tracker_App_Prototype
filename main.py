@@ -1,3 +1,6 @@
+import tkinter as tk
+from tkinter import messagebox
+
 class myApp(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -63,5 +66,8 @@ class myApp(tk.Tk):
     def about(self):
         messagebox.showinfo("About", "Pera ko\nv1.0\nDeveloped by:\nChristianJude23 & owenlim225")
 
-app = myApp()
-app.mainloop()
+
+
+if __name__ == "__main__":
+    app = myApp()
+    app.mainloop()
