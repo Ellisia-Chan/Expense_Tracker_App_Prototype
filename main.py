@@ -1,6 +1,3 @@
-import tkinter as tk
-from tkinter import messagebox, filedialog, simpledialog
-
 class myApp(tk.Tk):
     def __init__(self):
         super().__init__()
