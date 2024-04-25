@@ -1,7 +1,51 @@
+import tkinter as tk
+from tkinter import messagebox
+
+class startUp(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.geometry("500x200")
+        self.overrideredirect(True)
+        
+        # Center StartUp Window
+        self.update_idletasks()
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        window_width = self.winfo_reqwidth()
+        window_height = self.winfo_reqheight()
+        x = (screen_width - window_width) // 2
+        y = (screen_height - window_height) // 2
+        self.geometry("+{}+{}".format(x, y))
+    
+        # Call methods
+        self.createWidgets()
+        self.loading(0)
+
+    def createWidgets(self):
+        # Frame
+        self.frame = tk.Frame(self, width=500, height=200, bd=10, relief=tk.GROOVE, bg="#EADBC8")
+        self.frame.pack()
+
+        # Lbl
+        lbl_title = tk.Label(self.frame, text="Pera Ko", font=("times new roman", 40, "bold"), bg="#EADBC8")
+        lbl_title.place(x=150, y=50)
+        self.lbl_loading = tk.Label(self.frame, text="0 %", font=("times new roman", 18, "bold"), bg="#EADBC8")
+        self.lbl_loading.place(x=230, y=120)
+    
+    def loading(self, progress):       
+            if progress <= 100:
+                self.lbl_loading.config(text=f"{progress} %")
+                progress += 1
+                self.after(10, self.loading, progress)
+            else:
+                self.destroy()
+                win = myApp()
+                win.mainloop()          
+
 class myApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.geometry("500x600+0+0")
+        self.geometry("500x600")
         self.title("Pera ko")
         self.resizable(False, False)
 
@@ -63,5 +107,5 @@ class myApp(tk.Tk):
     def about(self):
         messagebox.showinfo("About", "Pera ko\nv1.0\nDeveloped by:\nChristianJude23 & owenlim225")
 
-app = myApp()
+app = startUp()
 app.mainloop()
