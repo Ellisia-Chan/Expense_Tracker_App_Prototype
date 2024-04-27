@@ -10,3 +10,5 @@ them, and view reports of their spending over time. Tkinter can be used to creat
 
 Color Palette:
 https://colorhunt.co/palette/fefaf6eadbc8dac0a3102c57
+
+:>
