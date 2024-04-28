@@ -1,6 +1,7 @@
-# Final-Project-1st-YR-2nd-Sem
+# Final-Project-1st-YR-2nd-Sem (v2.0 demo)
 
-![image](https://github.com/ChristianJude23/Final-Project-1st-YR-2nd-Sem/assets/152279955/b62acedb-86c1-41e2-82eb-79f145e8fbd3)
+![image](https://github.com/ChristianJude23/Final-Project-1st-YR-2nd-Sem/assets/87555304/cf1f24fc-f344-496c-88b2-2ec0dddc1b44)
+
 
 # Project:
 Expense Tracker. Build an expense tracker where users can input their expenses, categorize
