@@ -1,122 +1,126 @@
 import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
+import sqlite3
+from datetime import datetime
 
+class MoneyTrackerApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Money Tracker")
 
-class StartUp(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.geometry("500x200")
-        self.overrideredirect(True)
+        # Initialize database
+        self.conn = sqlite3.connect("finance.db")
+        self.create_table()
 
-        # Center StartUp Window
-        self.update_idletasks()
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-        window_width = self.winfo_reqwidth()
-        window_height = self.winfo_reqheight()
-        x = (screen_width - window_width) // 2
-        y = (screen_height - window_height) // 2
-        self.geometry("+{}+{}".format(x, y))
-
-        # Call methods
+        # Create UI elements
         self.create_widgets()
-        self.loading(0)
+        self.load_entries()
+
+    def create_table(self):
+        cursor = self.conn.cursor()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS entries (
+                            id INTEGER PRIMARY KEY,
+                            date TEXT,
+                            category TEXT,
+                            amount REAL
+                        )''')
+        self.conn.commit()
 
     def create_widgets(self):
-        # Frame
-        self.frame = tk.Frame(self, width=500, height=200, bd=10, relief=tk.GROOVE, bg="#102C57")
-        self.frame.pack()
+        # Treeview to display entries
+        self.tree = ttk.Treeview(self.root)
+        self.tree["columns"] = ("Date", "Category", "Amount")
+        self.tree.heading("#0", text="ID")
+        self.tree.heading("Date", text="Date")
+        self.tree.heading("Category", text="Category")
+        self.tree.heading("Amount", text="Amount")
+        self.tree.column("#0", width=50)
+        self.tree.column("Date", width=100)
+        self.tree.column("Category", width=100)
+        self.tree.column("Amount", width=100)
+        self.tree.grid(row=0, column=0, columnspan=2, padx=5, pady=5)
 
-        # Lbl
-        lbl_title = tk.Label(self.frame, text="Pera Ko", font=("kuashan script", 40, "bold"), bg="#102C57", fg="#fff")
-        lbl_title.place(x=150, y=50)
-        self.lbl_loading = tk.Label(self.frame, text="0 %", font=("kuashan script", 18, "bold"), bg="#102C57",
-                                    fg="#fff")
-        self.lbl_loading.place(x=230, y=120)
+        # Total label
+        self.total_label = ttk.Label(self.root, text="Total: $0.00")
+        self.total_label.grid(row=1, column=0, columnspan=2, padx=5, pady=5)
 
-    def loading(self, progress):
-        if progress <= 100:
-            self.lbl_loading.config(text=f"{progress} %")
-            progress += 1
-            self.after(10, self.loading, progress)
+        # Button to add entry
+        ttk.Button(self.root, text="+ Add Entry", command=self.add_entry_window).grid(row=2, column=0, columnspan=2, padx=5, pady=5)
+
+    def load_entries(self):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT * FROM entries")
+        rows = cursor.fetchall()
+
+        total = 0
+        for row in rows:
+            amount = "${:.2f}".format(row[3])
+            if row[2] == "Expense":
+                total -= row[3]
+                amount = "-" + amount  # Add '-' sign for expenses
+                self.tree.insert("", "end", text=row[0], values=(row[1], row[2], amount), tags=("expense",))
+            else:
+                total += row[3]
+                self.tree.insert("", "end", text=row[0], values=(row[1], row[2], amount), tags=("income",))
+        self.total_label.config(text="Total: ${:.2f}".format(total))
+
+        # Configure tag colors
+        self.tree.tag_configure("income", foreground="green")
+        self.tree.tag_configure("expense", foreground="red")
+
+    def add_entry_window(self):
+        self.add_window = tk.Toplevel(self.root)
+        self.add_window.title("Add Entry")
+
+        # Labels
+        ttk.Label(self.add_window, text="Date:").grid(row=0, column=0, padx=5, pady=5)
+        ttk.Label(self.add_window, text="Category:").grid(row=1, column=0, padx=5, pady=5)
+        ttk.Label(self.add_window, text="Amount:").grid(row=2, column=0, padx=5, pady=5)
+
+        # Entry fields
+        self.date_entry = ttk.Entry(self.add_window)
+        self.date_entry.grid(row=0, column=1, padx=5, pady=5)
+        self.date_entry.insert(tk.END, datetime.now().strftime("%Y-%m-%d"))
+
+        self.category_entry = ttk.Combobox(self.add_window, values=["Income", "Expense"])
+        self.category_entry.grid(row=1, column=1, padx=5, pady=5)
+        self.category_entry.set("Expense")
+
+        self.amount_entry = ttk.Entry(self.add_window)
+        self.amount_entry.grid(row=2, column=1, padx=5, pady=5)
+
+        # Button to add entry
+        ttk.Button(self.add_window, text="Add", command=self.add_entry).grid(row=3, column=0, columnspan=2, padx=5, pady=5)
+
+    def add_entry(self):
+        date = self.date_entry.get()
+        category = self.category_entry.get()
+        amount = self.amount_entry.get()
+
+        if date and category and amount:
+            try:
+                amount = float(amount)
+            except ValueError:
+                messagebox.showerror("Error", "Please enter a valid amount")
+                return
+
+            cursor = self.conn.cursor()
+            cursor.execute("INSERT INTO entries (date, category, amount) VALUES (?, ?, ?)", (date, category, amount))
+            self.conn.commit()
+
+            self.tree.delete(*self.tree.get_children())
+            self.load_entries()
+
+            # Close add entry window
+            self.add_window.destroy()
         else:
-            self.destroy()
-            window = MyApp()
-            window.mainloop()
+            messagebox.showerror("Error", "Please fill in all fields")
 
+def main():
+    root = tk.Tk()
+    app = MoneyTrackerApp(root)
+    root.mainloop()
 
-class MyApp(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.geometry("500x750")
-        self.title("Pera ko")
-        self.resizable(False, False)
-
-        self.create_widgets()
-
-    def create_widgets(self):
-        # Frames
-        self.top_frame = tk.Frame(self, width=500, height=180, bg="#102C57")
-        self.mid_frame = tk.Frame(self, width=500, height=490, bg="#EADBC8")
-        self.bot_frame = tk.Frame(self, width=500, height=80, bg="#102C57")
-
-        # Frames pos
-        self.top_frame.place(x=0, y=0)
-        self.mid_frame.place(x=0, y=180)
-        self.bot_frame.place(x=0, y=670)
-
-        # Top Frame widgets
-        # Lbl
-        lbl_date = tk.Label(self.top_frame, text="Date Here", font=("katibeh", 20, "bold"), bg="#102C57", fg="#fff")
-        lbl_expenses = tk.Label(self.top_frame, text="Expenses", font=("katibeh", 14, "bold"), bg="#102C57", fg="#fff")
-        lbl_income = tk.Label(self.top_frame, text="Income", font=("katibeh", 14, "bold"), bg="#102C57", fg="#fff")
-        lbl_balance = tk.Label(self.top_frame, text="Balance", font=("katibeh", 14, "bold"), bg="#102C57", fg="#fff")
-
-        lbl_expenses_amount = tk.Label(self.top_frame, text="₱1,000,000", font=("katibeh", 14, "bold"), bg="#102C57",
-                                       fg="#FF0000")
-        lbl_income_amount = tk.Label(self.top_frame, text="₱1,000,000", font=("katibeh", 14, "bold"), bg="#102C57",
-                                     fg="#90EE90")
-        lbl_amount_amount = tk.Label(self.top_frame, text="₱1,000,000", font=("katibeh", 14, "bold"), bg="#102C57",
-                                     fg="#fff")
-
-        # Btn
-        btn_menu = tk.Button(self.top_frame, text="≡", font=("katibeh", 14, "bold"), bg="#102C57", fg="#fff", width=3)
-        btn_search = tk.Button(self.top_frame, text="🔍", font=("katibeh", 14, "bold"), bg="#102C57", fg="#fff", width=3)
-
-        btn_date_next = tk.Button(self.top_frame, text=">", font=("katibeh", 14, "bold"), bg="#102C57", fg="#fff",
-                                  width=3)
-        btn_date_previous = tk.Button(self.top_frame, text="<", font=("katibeh", 14, "bold"), bg="#102C57", fg="#fff",
-                                      width=3)
-
-        # Top Frame Widgets pos
-        # lbl
-        lbl_date.place(x=185, y=50)
-        lbl_expenses.place(x=40, y=110)
-        lbl_income.place(x=210, y=110)
-        lbl_balance.place(x=360, y=110)
-
-        lbl_expenses_amount.place(x=30, y=140)
-        lbl_income_amount.place(x=200, y=140)
-        lbl_amount_amount.place(x=350, y=140)
-
-        # Btn
-        btn_menu.place(x=10, y=10)
-        btn_search.place(x=450, y=10)
-
-        btn_date_next.place(x=340, y=50)
-        btn_date_previous.place(x=120, y=50)
-
-        # Mid Frame widgets
-        lb_listbox = tk.Listbox(self.mid_frame, width=44, height=30, borderwidth=0, highlightthickness=0,
-                                font=("katibeh", 14, "bold"), bg="#EADBC8")
-
-        # Mid Frame Widgets pos
-        lb_listbox.place(x=10, y=10)
-
-
-# Call StartUp
-# app = StartUp()
-# app.mainloop()
-
-# Call Main Window
-win = MyApp()
-win.mainloop()
+if __name__ == "__main__":
+    main()
