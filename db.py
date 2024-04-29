@@ -18,29 +18,64 @@ else:
     cursor = conn.cursor()
 
     # Create expenses table with date as the first column
-    cursor.execute('''CREATE TABLE IF NOT EXISTS expenses (
+    cursor.execute('''CREATE TABLE IF NOT EXISTS entries (
                         date DATE,
                         id INTEGER PRIMARY KEY,
-                        description TEXT,
+                        category TEXT,
+                        name TEXT,
                         amount REAL
                     )''')
-
-    # Create income table with date as the first column
-    cursor.execute('''CREATE TABLE IF NOT EXISTS income (
-                        date DATE,
-                        id INTEGER PRIMARY KEY,
-                        source TEXT,
-                        amount REAL
-                    )''')
-
-    # Create amount table
-    cursor.execute('''CREATE TABLE IF NOT EXISTS amount (
-                        id INTEGER PRIMARY KEY,
-                        total_expenses REAL,
-                        total_income REAL
-                    )''')
-
+    
     # Commit changes and close connection
     conn.commit()
     conn.close()
     print("Database created successfully at:", db_file)
+
+
+def load_entries(current_date):
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM entries WHERE date = ?", (current_date,))
+    entries = cursor.fetchall()
+    conn.close()
+
+    if entries:
+        return entries
+
+def total_amount():
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT SUM(amount) FROM entries WHERE category = 'Income'")
+    income = cursor.fetchone()[0]  # Fetch the sum of amounts
+
+    cursor.execute("SELECT SUM(amount) FROM entries WHERE category = 'Expense'")
+    expense = cursor.fetchone()[0]  # Fetch the sum of amounts
+
+    total_balance = 0
+    if income and expense:
+        total_balance = income - expense
+    elif income:
+        total_balance += income
+
+    conn.close()
+    if total_balance:
+        return total_balance
+
+
+
+def add_data_to_table(date, category, name, amount):
+    # Connect to SQLite database
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+
+    if category == "Expense":
+        cursor.execute("INSERT INTO entries (date, category, name, amount) VALUES (?, ?, ?, ?)", (date, category, name, amount))
+        conn.commit()
+
+    if category == "Income":
+        cursor.execute("INSERT INTO entries (date, category, name, amount) VALUES (?, ?, ?, ?)", (date, category, name, amount))
+        conn.commit()
+        
+    # Close connection
+    conn.close()
