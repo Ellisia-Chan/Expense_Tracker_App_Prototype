@@ -87,7 +87,6 @@ class MyApp(tk.Tk):
                                            bg="#102C57", fg="#fff")
 
         btn_menu = tk.Button(self.top_frame, text="≡", font=("katibeh", 14, "bold"), bg="#102C57", fg="#fff", width=3)
-        btn_search = tk.Button(self.top_frame, text="🔍", font=("katibeh", 14, "bold"), bg="#102C57", fg="#fff", width=3)
 
         self.btn_date_next = tk.Button(self.top_frame, text=">", font=("katibeh", 14, "bold"), bg="#102C57", fg="#fff",
                                   width=3, command=self.next_date)
@@ -105,7 +104,6 @@ class MyApp(tk.Tk):
         self.lbl_amount_amount.place(x=350, y=140)
 
         btn_menu.place(x=10, y=10)
-        btn_search.place(x=450, y=10)
 
         self.btn_date_next.place(x=360, y=50)
         self.btn_date_previous.place(x=100, y=50)
@@ -161,6 +159,9 @@ class MyApp(tk.Tk):
 
         self.ent_category = ttk.Combobox(frame, values=["Income", "Expense"], font=("katibeh", 16), width=12)
         self.ent_category.set("Expense")
+        self.ent_category['validate'] = 'key'
+        self.ent_category['validatecommand'] = (self.register(lambda text: text.isdigit() or text == ""), '%S')
+        
         self.ent_name = ttk.Entry(frame, font=("katibeh", 16), width=16)
         self.ent_amount = ttk.Entry(frame, font=("katibeh", 16), width=14)
 
@@ -228,6 +229,7 @@ class MyApp(tk.Tk):
                 self.tv_tree_view.tag_configure(category, foreground=text_color)
 
         self.update_amount_label()
+        
     def update_amount_label(self):
         total_expenses = 0
         total_income = 0
