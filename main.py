@@ -86,8 +86,10 @@ class MyApp(tk.Tk):
         self.lbl_amount_amount = tk.Label(self.top_frame, text="₱0", font=("katibeh", 14, "bold"),
                                            bg="#102C57", fg="#fff")
 
+        # Menu Btn
         btn_menu = tk.Button(self.top_frame, text="≡", font=("katibeh", 14, "bold"), bg="#102C57", fg="#fff", width=3)
 
+        # Date Next/Previous Btn
         self.btn_date_next = tk.Button(self.top_frame, text=">", font=("katibeh", 14, "bold"), bg="#102C57", fg="#fff",
                                   width=3, command=self.next_date)
         self.btn_date_previous = tk.Button(self.top_frame, text="<", font=("katibeh", 14, "bold"), bg="#102C57", fg="#fff",
@@ -109,6 +111,7 @@ class MyApp(tk.Tk):
         self.btn_date_previous.place(x=100, y=50)
 
         # Mid Frame widgets
+        # TreeView
         self.tv_tree_view = ttk.Treeview(self.mid_frame, columns=(1, 2, 3), show="headings", height=23, style="Custom.Treeview")
         self.tv_tree_view.column(1, anchor="center", stretch="No", width=80)
         self.tv_tree_view.column(2, anchor="center", stretch="No", width=200)
@@ -117,21 +120,25 @@ class MyApp(tk.Tk):
         self.tv_tree_view.heading(2, text="Name")
         self.tv_tree_view.heading(3, text="Amount")
 
+        # TreeView pos
         self.tv_tree_view.pack(side="left")
 
+        # Config TreeView Style
         style = ttk.Style()
         style.theme_use("clam")
         style.configure("Custom.Treeview.Heading", font=("katibeh", 18))
         style.configure("Custom.Treeview", font=("katibeh", 16), background="#EADBC8", fieldbackground="#EADBC8")
         style.configure("Custom.Treeview", rowheight=30)
 
+        # Disable TreeView Heading Resizing
         self.tv_tree_view.bind('<Button-1>', 'break')
 
+        # TreeView Vertical ScrollBar
         scrollbar = ttk.Scrollbar(self.mid_frame, orient="vertical", command=self.tv_tree_view.yview)
         scrollbar.pack(side="right", fill="y")
 
-        # Btn
-        btn_edit = tk.Button(self.mid_frame, text="✍", font=("katibeh", 24))
+        # Edit Btn
+        btn_edit = tk.Button(self.mid_frame, text="📝", font=("katibeh", 20), command=self.edit_entries_window)
         btn_edit.place(x=400, y=400)
 
         # Bot Frame
@@ -144,24 +151,29 @@ class MyApp(tk.Tk):
         if self.current_date.get() == today:
             self.btn_date_next.config(state="disabled")
 
+    # App Window PopUps
     def add_entry_win(self):
         self.add_window = tk.Toplevel(self)
         self.add_window.title("Add Items")
         self.add_window.geometry("400x300")
         self.add_window.config(bg="#102C57")
 
+        # Frames
         frame = tk.Frame(self.add_window, bg="#EADBC8", width=340, height=230)
         frame.place(x=30, y=30)
 
+        # Lbl
         ttk.Label(frame, text="Category:", font=("katibeh", 16, "bold"), background="#EADBC8").place(x=10, y=20)
         ttk.Label(frame, text="Name:", font=("katibeh", 16, "bold"), background="#EADBC8").place(x=10, y=60)
         ttk.Label(frame, text="Amount:", font=("katibeh", 16, "bold"), background="#EADBC8").place(x=10, y=100)
 
+        # Category ComboBox
         self.ent_category = ttk.Combobox(frame, values=["Income", "Expense"], font=("katibeh", 16), width=12)
         self.ent_category.set("Expense")
         self.ent_category['validate'] = 'key'
         self.ent_category['validatecommand'] = (self.register(lambda text: text.isdigit() or text == ""), '%S')
         
+        # Entry
         self.ent_name = ttk.Entry(frame, font=("katibeh", 16), width=16)
         self.ent_amount = ttk.Entry(frame, font=("katibeh", 16), width=14)
 
@@ -169,10 +181,78 @@ class MyApp(tk.Tk):
         self.ent_name.place(x=90, y=60)
         self.ent_amount.place(x=110, y=100)
 
+        # Add Button
         btn_add = tk.Button(frame, text="Add", font=("katibeh", 16), width=9, command=self.add_to_db)
-        btn_add.place(x=120, y=170)
+        btn_add.place(x=110, y=170)
 
+    def edit_entries_window(self):
+        self.edit_entries_win = tk.Toplevel()
+        self.edit_entries_win.title("Options")
+        self.edit_entries_win.geometry("400x400")
 
+        # Frames
+        frame1 = tk.Frame(self.edit_entries_win, height=100, width=400, bg="#102C57")
+        frame2 = tk.Frame(self.edit_entries_win, height=300, width=400, bg="#EADBC8")
+        self.update_frame = tk.Frame(frame2, height=280, width=380, bg="#102C57", bd=3, relief=tk.GROOVE)
+        self.remove_frame = tk.Frame(frame2, height=280, width=380, bg="#102C57", bd=3, relief=tk.GROOVE)
+
+        # Frame pos
+        frame1.place(x=0, y=0)
+        frame2.place(x=0, y=100)
+
+        # Frame 1 Widgets
+        # Btn
+        btn_update = tk.Button(frame1, text="Update", font=("katibeh", 16), command=self.update_window)
+        btn_remove = tk.Button(frame1, text="Remove", font=("katibeh", 16), command=self.remove_window)
+
+        # Btn Pos
+        btn_update.place(x=100, y=30)
+        btn_remove.place(x=200, y=30)
+
+        # Update Frame Widgets
+        # Label
+        lbl_update_id = tk.Label(self.update_frame, text="ID:", font=("katibeh", 18), bg="#102C57", fg="#fff")
+        lbl_update_name = tk.Label(self.update_frame, text="Name:", font=("katibeh", 18), bg="#102C57", fg="#fff")
+        lbl_update_category = tk.Label(self.update_frame, text="Category:", font=("katibeh", 18), bg="#102C57", fg="#fff")
+        lbl_update_amount = tk.Label(self.update_frame, text="Amount:", font=("katibeh", 18), bg="#102C57", fg="#fff")
+
+        # Label pos
+        lbl_update_id.place(x=50, y=20)
+        lbl_update_name.place(x=50, y=50)
+        lbl_update_category.place(x=50, y=80)
+        lbl_update_amount.place(x=50, y=110)
+
+        # Ent
+        ent_update_id = tk.Entry(self.update_frame, font=("katibeh", 14))
+        ent_update_id.config(validate="key", validatecommand=(ent_update_id.register(lambda char: char.isdigit() or char == ""), "%S"))
+
+        # Ent pos
+        ent_update_id.place(x=100, y=22)
+
+        # Btn
+        btn_update_frame = tk.Button(self.update_frame, text="Update", font=("katibeh", 16), width=10)
+        btn_update_cancel_frame = tk.Button(self.update_frame, text="Cancel", font=("katibeh", 16), width=8)
+
+        # Btn pos
+        btn_update_frame.place(x=110, y=170)
+        btn_update_cancel_frame.place(x=120, y=220)
+
+        # Remove Frame Widgets
+        # Lbl
+        lbl_remove_id = tk.Label(self.remove_frame, text="ID:", font=("katibeh", 18), bg="#102C57", fg="#fff")
+
+        # Lbl pos
+        lbl_remove_id.place(x=50, y=80)
+
+        # Btn
+        btn_remove_frame = tk.Button(self.remove_frame, text="Remove", font=("katibeh", 16), width=10)
+        btn_remove_cancel_frame = tk.Button(self.remove_frame, text="Cancel", font=("katibeh", 16), width=8)
+
+        # Btn pos
+        btn_remove_frame.place(x=110, y=170)
+        btn_remove_cancel_frame.place(x=120, y=220)
+
+    # App Functions Section
     def previous_date(self):
         current = datetime.strptime(self.current_date.get(), "%B %d, %Y")
         new_date = current - timedelta(days=1)
@@ -259,7 +339,7 @@ class MyApp(tk.Tk):
         else:
             self.lbl_amount_amount.config(text="₱0.00")
 
-
+    # App Window PopUp Functions
     def add_to_db(self):
         date = self.current_date.get()
         category = self.ent_category.get()
@@ -279,7 +359,15 @@ class MyApp(tk.Tk):
         else:
             messagebox.showerror("Error", "Please fill in all fields")
 
-
+    def update_window(self):
+        self.remove_frame.place_forget()
+        self.update_frame.place(x=10, y=10)
+        
+    def remove_window(self):
+        self.update_frame.place_forget()
+        self.remove_frame.place(x=10, y=10)
+        
+        
 # Call StartUp
 # app = StartUp()
 # app.mainloop()
