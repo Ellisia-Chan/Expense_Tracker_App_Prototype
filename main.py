@@ -50,9 +50,9 @@ class StartUp(tk.Tk):
 class MyApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.geometry("500x750")
+        self.geometry("900x600+0+0")
         self.title("Pera ko")
-        self.resizable(False, False)
+        self.resizable(False, False)       
 
         self.create_widgets()
         self.load_entries()
@@ -60,14 +60,14 @@ class MyApp(tk.Tk):
 
     def create_widgets(self):
         # Frames
-        self.top_frame = tk.Frame(self, width=500, height=180, bg="#102C57")
-        self.mid_frame = tk.Frame(self, width=500, height=490, bg="#EADBC8")
-        self.bot_frame = tk.Frame(self, width=500, height=80, bg="#102C57")
+        self.top_frame = tk.Frame(self, width=900, height=130, bg="#102C57")
+        self.mid_frame = tk.Frame(self, width=900, height=400, bg="#EADBC8")
+        self.bot_frame = tk.Frame(self, width=900, height=70, bg="#102C57")
 
         # Frames pos
         self.top_frame.place(x=0, y=0)
-        self.mid_frame.place(x=0, y=180)
-        self.bot_frame.place(x=0, y=670)
+        self.mid_frame.place(x=0, y=130)
+        self.bot_frame.place(x=0, y=530)
 
         # Date
         self.current_date = tk.StringVar()
@@ -97,13 +97,13 @@ class MyApp(tk.Tk):
 
         # Top Frame Widgets pos
         self.lbl_date.place(x=160, y=50)
-        lbl_expenses.place(x=40, y=110)
-        lbl_income.place(x=210, y=110)
-        lbl_balance.place(x=360, y=110)
+        lbl_expenses.place(x=440, y=30)
+        lbl_income.place(x=580, y=30)
+        lbl_balance.place(x=730, y=30)
 
-        self.lbl_expenses_amount.place(x=30, y=140)
-        self.lbl_income_amount.place(x=200, y=140)
-        self.lbl_amount_amount.place(x=350, y=140)
+        self.lbl_expenses_amount.place(x=440, y=60)
+        self.lbl_income_amount.place(x=580, y=60)
+        self.lbl_amount_amount.place(x=730, y=60)
 
         btn_menu.place(x=10, y=10)
 
@@ -112,10 +112,10 @@ class MyApp(tk.Tk):
 
         # Mid Frame widgets
         # TreeView
-        self.tv_tree_view = ttk.Treeview(self.mid_frame, columns=(1, 2, 3), show="headings", height=23, style="Custom.Treeview")
-        self.tv_tree_view.column(1, anchor="center", stretch="No", width=80)
-        self.tv_tree_view.column(2, anchor="center", stretch="No", width=200)
-        self.tv_tree_view.column(3, anchor="center", stretch="No", width=200)
+        self.tv_tree_view = ttk.Treeview(self.mid_frame, columns=(1, 2, 3), show="headings", height=12, style="Custom.Treeview")
+        self.tv_tree_view.column(1, anchor="center", stretch="No", width=200)
+        self.tv_tree_view.column(2, anchor="center", stretch="No", width=340)
+        self.tv_tree_view.column(3, anchor="center", stretch="No", width=340)
         self.tv_tree_view.heading(1, text="ID")
         self.tv_tree_view.heading(2, text="Name")
         self.tv_tree_view.heading(3, text="Amount")
@@ -139,11 +139,11 @@ class MyApp(tk.Tk):
 
         # Edit Btn
         btn_edit = tk.Button(self.mid_frame, text="📝", font=("katibeh", 20), command=self.edit_entries_window)
-        btn_edit.place(x=400, y=400)
+        btn_edit.place(x=810, y=330)
 
         # Bot Frame
-        btn_add = tk.Button(self.bot_frame, text="+", font=("katibeh", 30), bg="#FEFAF6", command=self.add_entry_win)
-        btn_add.place(x=220, y=0)
+        btn_add = tk.Button(self.bot_frame, text="+", font=("katibeh", 28), bg="#FEFAF6", command=self.add_entry_win)
+        btn_add.place(x=430, y=0)
         
         # Enable Disable Widgets
         # Disable Next button if Date is Current
@@ -171,11 +171,13 @@ class MyApp(tk.Tk):
         self.ent_category = ttk.Combobox(frame, values=["Income", "Expense"], font=("katibeh", 16), width=12)
         self.ent_category.set("Expense")
         self.ent_category['validate'] = 'key'
-        self.ent_category['validatecommand'] = (self.register(lambda text: text.isdigit() or text == ""), '%S')
+        self.ent_category['validatecommand'] = (self.register(lambda text: text.isdigit() and text.isalpha() or text == ""), '%S')
         
         # Entry
         self.ent_name = ttk.Entry(frame, font=("katibeh", 16), width=16)
+        self.ent_name.config(validate="key", validatecommand=(self.ent_name.register(lambda char: char.isalpha() or char == ""), "%S"))
         self.ent_amount = ttk.Entry(frame, font=("katibeh", 16), width=14)
+        self.ent_amount.config(validate="key", validatecommand=(self.ent_amount.register(lambda char: char.isdigit() or char == ""), '%S'))
 
         self.ent_category.place(x=130, y=20)
         self.ent_name.place(x=90, y=60)
@@ -189,6 +191,7 @@ class MyApp(tk.Tk):
         self.edit_entries_win = tk.Toplevel()
         self.edit_entries_win.title("Options")
         self.edit_entries_win.geometry("400x400")
+        self.edit_entries_win.resizable(False, False)
 
         # Frames
         frame1 = tk.Frame(self.edit_entries_win, height=100, width=400, bg="#102C57")
@@ -223,15 +226,28 @@ class MyApp(tk.Tk):
         lbl_update_amount.place(x=50, y=110)
 
         # Ent
-        ent_update_id = tk.Entry(self.update_frame, font=("katibeh", 14))
+        ent_update_id = tk.Entry(self.update_frame, font=("katibeh", 14), width=23)
         ent_update_id.config(validate="key", validatecommand=(ent_update_id.register(lambda char: char.isdigit() or char == ""), "%S"))
+
+        ent_update_name = tk.Entry(self.update_frame, font=("katibeh", 14))
+        ent_update_name.config(validate="key", validatecommand=(ent_update_id.register(lambda char: char.isalpha() or char == ""), "%S"))
+
+        ent_update_category = ttk.Combobox(self.update_frame, values=["Income", "Expense"], font=("katibeh", 14), width=15)
+        ent_update_category.set("Expense")
+        ent_update_category.config(validate="key", validatecommand=(ent_update_category.register(lambda char: char.isdigit() and char.isalpha() or char == ""), "%S"))
+
+        ent_update_amount = tk.Entry(self.update_frame, font=("katibeh", 14), width=18)
+        ent_update_amount.config(validate="key", validatecommand=(ent_update_amount.register(lambda char: char.isdigit() or char == ""), "%S"))
 
         # Ent pos
         ent_update_id.place(x=100, y=22)
+        ent_update_name.place(x=130, y=53)
+        ent_update_category.place(x=170, y=83)
+        ent_update_amount.place(x=150, y=114)
 
         # Btn
         btn_update_frame = tk.Button(self.update_frame, text="Update", font=("katibeh", 16), width=10)
-        btn_update_cancel_frame = tk.Button(self.update_frame, text="Cancel", font=("katibeh", 16), width=8)
+        btn_update_cancel_frame = tk.Button(self.update_frame, text="Cancel", font=("katibeh", 16), width=8, command=self.edit_entries_win.destroy)
 
         # Btn pos
         btn_update_frame.place(x=110, y=170)
@@ -244,9 +260,16 @@ class MyApp(tk.Tk):
         # Lbl pos
         lbl_remove_id.place(x=50, y=80)
 
+        # Ent
+        ent_remove_id = tk.Entry(self.remove_frame, font=("katibeh", 14), width=18)
+        ent_remove_id.config(validate="key", validatecommand=(ent_remove_id.register(lambda char: char.isdigit() or char == ""), "%S"))
+
+        # Ent pos
+        ent_remove_id.place(x=120, y=83)
+
         # Btn
         btn_remove_frame = tk.Button(self.remove_frame, text="Remove", font=("katibeh", 16), width=10)
-        btn_remove_cancel_frame = tk.Button(self.remove_frame, text="Cancel", font=("katibeh", 16), width=8)
+        btn_remove_cancel_frame = tk.Button(self.remove_frame, text="Cancel", font=("katibeh", 16), width=8, command=self.edit_entries_win.destroy)
 
         # Btn pos
         btn_remove_frame.place(x=110, y=170)
