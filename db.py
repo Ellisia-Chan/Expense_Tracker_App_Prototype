@@ -9,9 +9,7 @@ db_file = os.path.join(script_dir, "finance.db")
 
 def create_database(): 
     # Check if the database file already exists
-    if os.path.exists(db_file):
-        print("Database already exists at:", db_file)
-    else:
+    if not os.path.exists(db_file):
         # Connect to SQLite database (or create it if it doesn't exist)
         conn = sqlite3.connect(db_file)
 
@@ -30,8 +28,12 @@ def create_database():
         # Commit changes and close connection
         conn.commit()
         conn.close()
-        print("Database created successfully at:", db_file)
-
+        
+        # For Debugging
+        # print("Database created successfully at:", db_file)
+    # else:
+        # print("Database already exists at:", db_file)
+        
 # Get all Data from the table
 def load_entries(current_date):
     conn = sqlite3.connect(db_file)

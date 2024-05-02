@@ -33,7 +33,7 @@ class StartUp(tk.Tk):
             bd=10,
             relief=tk.GROOVE,
             bg="#102C57"
-            )
+        )
         
       # Lbl
         lbl_title = tk.Label(
@@ -42,7 +42,7 @@ class StartUp(tk.Tk):
             font=("kuashan script", 40, "bold"),
             bg="#102C57",
             fg="#fff"
-            )
+        )
 
         self.lbl_loading = tk.Label(
             self.frame,
@@ -50,7 +50,7 @@ class StartUp(tk.Tk):
             font=("kuashan script", 18, "bold"),
             bg="#102C57",
             fg="#fff"
-            )
+        )
         
         # Widget Pos
         # Frame
@@ -88,6 +88,8 @@ class MyApp(tk.Tk):
         self.top_frame = tk.Frame(self, width=900, height=130, bg="#102C57")
         self.mid_frame = tk.Frame(self, width=900, height=400, bg="#EADBC8")
         self.bot_frame = tk.Frame(self, width=900, height=70, bg="#102C57")
+        
+        self.menu_frame = tk.Frame(self, width=300, height=600, bg="#102C57", bd=4, relief=tk.GROOVE)
 
         # Frames pos
         self.top_frame.place(x=0, y=0)
@@ -104,14 +106,15 @@ class MyApp(tk.Tk):
             font=("katibeh", 20, "bold"),
             bg="#102C57",
             fg="#fff"
-            )
+        )
         
         lbl_expenses = tk.Label(
             self.top_frame,
             text="Expenses",
             font=("katibeh", 14, "bold"),
             bg="#102C57",
-            fg="#fff")
+            fg="#fff"
+        )
         
         lbl_income = tk.Label(
             self.top_frame,
@@ -119,7 +122,7 @@ class MyApp(tk.Tk):
             font=("katibeh", 14, "bold"),
             bg="#102C57",
             fg="#fff"
-            )
+        )
         
         lbl_balance = tk.Label(
             self.top_frame,
@@ -127,7 +130,7 @@ class MyApp(tk.Tk):
             font=("katibeh", 14, "bold"),
             bg="#102C57",
             fg="#fff"
-            )
+        )
 
         self.lbl_expenses_amount = tk.Label(
             self.top_frame,
@@ -135,21 +138,21 @@ class MyApp(tk.Tk):
             font=("katibeh", 14, "bold"),
             bg="#102C57",
             fg="#FF0000"
-            )
+        )
         
         self.lbl_income_amount = tk.Label(
             self.top_frame, text="₱0",
             font=("katibeh", 14, "bold"),
             bg="#102C57",
             fg="#90EE90"
-            )
+        )
         
         self.lbl_amount_amount = tk.Label(
             self.top_frame, text="₱0",
             font=("katibeh", 14, "bold"),
             bg="#102C57",
             fg="#fff"
-            )
+        )
 
         # Menu Btn
         btn_menu = tk.Button(
@@ -158,8 +161,10 @@ class MyApp(tk.Tk):
             font=("katibeh", 14, "bold"),
             bg="#102C57",
             fg="#fff",
-            width=3
-            )
+            width=3,
+            cursor="hand2",
+            command=self.menu_sidebar
+        )
 
         # Date Next/Previous Btn
         self.btn_date_next = tk.Button(
@@ -169,8 +174,9 @@ class MyApp(tk.Tk):
             bg="#102C57",
             fg="#fff",
             width=3,
+            cursor="hand2",
             command=self.next_date
-            )
+        )
         
         self.btn_date_previous = tk.Button(
             self.top_frame,
@@ -179,8 +185,9 @@ class MyApp(tk.Tk):
             bg="#102C57",
             fg="#fff",
             width=3,
+            cursor="hand2",
             command=self.previous_date
-            )
+        )
 
         # Top Frame Widgets pos
         self.lbl_date.place(x=160, y=50)
@@ -205,7 +212,7 @@ class MyApp(tk.Tk):
             show="headings",
             height=12,
             style="Custom.Treeview"
-            )
+        )
         
         self.tv_tree_view.column(1, anchor="center", stretch="No", width=200)
         self.tv_tree_view.column(2, anchor="center", stretch="No", width=340)
@@ -232,7 +239,7 @@ class MyApp(tk.Tk):
             self.mid_frame,
             orient="vertical",
             command=self.tv_tree_view.yview
-            )
+        )
         
         scrollbar.pack(side="right", fill="y")
 
@@ -241,8 +248,9 @@ class MyApp(tk.Tk):
             self.mid_frame,
             text="📝",
             font=("katibeh", 20),
+            cursor="hand2",
             command=self.edit_entries_window
-            )
+        )
         
         btn_edit.place(x=810, y=330)
 
@@ -250,12 +258,126 @@ class MyApp(tk.Tk):
         btn_add = tk.Button(
             self.bot_frame,
             text="+",
-            font=("katibeh", 28)
-            , bg="#FEFAF6",
+            font=("katibeh", 28),
+            bg="#FEFAF6",
+            cursor="hand2",
             command=self.add_entry_win
-            )
+        )
         
         btn_add.place(x=430, y=0)
+        
+        # Menu Sidebar widgets
+        btn_sidebar_menu_back = tk.Button(
+            self.menu_frame,
+            text="<",
+            font=("katibeh", 14, "bold"),
+            bg="#102C57",
+            fg="#fff",
+            cursor="hand2",
+            width=3,
+            command=lambda: self.menu_frame.place_forget()
+        )
+        
+        lbl_sidebar_title = tk.Label(
+            self.menu_frame,
+            text="Pera Ko",
+            font=("katibeh", 30, "bold"),
+            bg="#102C57",
+            fg="#fff",
+        )
+        
+        self.menu_sidebar_child_frame = tk.Frame(
+            self.menu_frame,
+            bg="#EADBC8",
+            width=260,
+            height=380,
+            bd=3,
+            relief=tk.GROOVE
+        )
+        
+        # Widgets Inside menu sidebar child Frame
+        btn_calculator = tk.Button(
+            self.menu_sidebar_child_frame,
+            text="Calculator",
+            font=("katibeh", 18, "bold"),
+            cursor="hand2",
+            width=15,
+            bg="#EADBC8",
+            borderwidth=0,
+            anchor="w",
+            relief="flat"
+        )
+        
+        btn_project_team = tk.Button(
+            self.menu_sidebar_child_frame,
+            text="Project Team",
+            font=("katibeh", 18, "bold"),
+            cursor="hand2",
+            width=15,
+            bg="#EADBC8",
+            borderwidth=0,
+            anchor="w",
+            relief="flat"
+        )
+        
+        btn_clear_data = tk.Button(
+            self.menu_sidebar_child_frame,
+            text="Clear Data",
+            font=("katibeh", 18, "bold"),
+            cursor="hand2",
+            width=15,
+            bg="#EADBC8",
+            borderwidth=0,
+            anchor="w",
+            relief="flat"
+        )
+        
+        btn_about = tk.Button(
+            self.menu_sidebar_child_frame,
+            text="About",
+            font=("katibeh", 18, "bold"),
+            cursor="hand2",
+            width=15,
+            bg="#EADBC8",
+            borderwidth=0,
+            anchor="w",
+            relief="flat"
+        )
+        
+        btn_exit = tk.Button(
+            self.menu_sidebar_child_frame,
+            text="Exit",
+            font=("katibeh", 18, "bold"),
+            cursor="hand2",
+            width=15,
+            bg="#EADBC8",
+            borderwidth=0,
+            anchor="w",
+            relief="flat"
+        )
+        
+        # Create Bindings For top, mid, bot frame and widgets to close menu sidebar after off focus
+        self.top_frame.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
+        self.mid_frame.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
+        self.bot_frame.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
+        self.tv_tree_view.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
+        self.btn_date_next.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
+        btn_add.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
+        scrollbar.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
+        btn_edit.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
+        
+        # Menu Parent Frame Widgets pos
+        btn_sidebar_menu_back.place(x=10, y=10)
+        lbl_sidebar_title.place(x=70, y=60)
+        self.menu_sidebar_child_frame.place(x=20, y=120)
+        
+        # Menu Parent Frame Widgets pos
+        btn_calculator.place(x=10, y=10)
+        btn_project_team.place(x=10, y=50)
+        btn_clear_data.place(x=10, y=90)
+        btn_about.place(x=10, y=130)
+        btn_exit.place(x=10, y=170)
+        
         
         # Enable Disable Widgets
         # Disable Next button if Date is Current
@@ -291,7 +413,7 @@ class MyApp(tk.Tk):
             frame,
             values=["Income", "Expense"],
             font=("katibeh", 16),
-            width=12
+            width=12,
             )
         
         self.ent_category.set("Expense")
@@ -324,6 +446,7 @@ class MyApp(tk.Tk):
             text="Add",
             font=("katibeh", 16),
             width=9,
+            cursor="hand2",
             command=self.add_to_db
             )
         
@@ -348,8 +471,21 @@ class MyApp(tk.Tk):
 
         # Frame 1 Widgets
         # Btn
-        btn_update = tk.Button(frame1, text="Update", font=("katibeh", 16), command=self.update_window)
-        btn_remove = tk.Button(frame1, text="Remove", font=("katibeh", 16), command=self.remove_window)
+        btn_update = tk.Button(
+            frame1,
+            text="Update",
+            font=("katibeh", 16),
+            cursor="hand2",
+            command=self.update_window
+            )
+        
+        btn_remove = tk.Button(
+            frame1,
+            text="Remove",
+            font=("katibeh", 16),
+            cursor="hand2",
+            command=self.remove_window
+            )
 
         # Btn Pos
         btn_update.place(x=100, y=30)
@@ -415,7 +551,7 @@ class MyApp(tk.Tk):
             self.update_frame,
             values=["Income", "Expense"],
             font=("katibeh", 14),
-            width=15
+            width=15,
             )
         
         self.ent_update_category.set("Expense")
@@ -440,7 +576,8 @@ class MyApp(tk.Tk):
             self.update_frame,
             text="Update",
             font=("katibeh", 16),
-            width=10, 
+            width=10,
+            cursor="hand2", 
             command=self.update_data_to_db
             )
         
@@ -449,6 +586,7 @@ class MyApp(tk.Tk):
             text="Cancel",
             font=("katibeh", 16),
             width=8,
+            cursor="hand2",
             command=self.edit_entries_win.destroy
             )
 
@@ -487,6 +625,7 @@ class MyApp(tk.Tk):
             text="Remove",
             font=("katibeh", 16),
             width=10,
+            cursor="hand2",
             command=self.remove_data_from_db
             )
         
@@ -495,6 +634,7 @@ class MyApp(tk.Tk):
             text="Cancel",
             font=("katibeh", 16),
             width=8,
+            cursor="hand2",
             command=self.edit_entries_win.destroy
             )
 
@@ -599,6 +739,19 @@ class MyApp(tk.Tk):
         else:
             self.lbl_amount_amount.config(text="₱0.00")
 
+    # Show Sidebar
+    def menu_sidebar(self):
+        self.menu_frame.place(x=0, y=0)
+    
+    # Close Menu Sidebar
+    def close_menu_sidebar(self, event=None):
+        self.menu_frame.place_forget()
+    
+    # Check if mouse click detected outside the menu sidebar frame
+    def menu_sidebar_outside_frame_click(self, event):
+        if event.widget != self.menu_frame:
+            self.close_menu_sidebar()
+        
     # App Window PopUp Functions
     # Add data to Database
     def add_to_db(self):
