@@ -79,9 +79,15 @@ class MyApp(tk.Tk):
         self.title("Pera ko")
         self.resizable(False, False)       
 
+        # Check if Database exist, if not, create database file where the py file is located.
+        db.create_database()
+        
+        # Call Methods
         self.create_widgets()
         self.load_entries()
         self.update_total_balance()
+        
+        
 
     def create_widgets(self):
         # Frames
@@ -232,7 +238,7 @@ class MyApp(tk.Tk):
         style.configure("Custom.Treeview", rowheight=30)
 
         # Disable TreeView Heading Resizing and selection
-        self.tv_tree_view.bind('<Button-1>', 'break')
+        self.tv_tree_view.bind('<B1-Motion>', lambda event: 'break')
         self.tv_tree_view.bind("<ButtonRelease-1>", lambda event: self.tv_tree_view.selection_remove(self.tv_tree_view.selection()))
 
         # TreeView Vertical ScrollBar
@@ -406,6 +412,7 @@ class MyApp(tk.Tk):
         self.add_window.title("Add Items")
         self.add_window.geometry("400x300")
         self.add_window.config(bg="#102C57")
+        self.add_window.resizable(False, False)
         self.add_window.grab_set()
 
         # Frames
@@ -695,9 +702,6 @@ class MyApp(tk.Tk):
         self.update_amount_label()
 
     def load_entries(self):
-        # Check if Database exist, if not, create database file where the py file is located.
-        db.create_database()
-        
         # Get current date
         current_date = self.current_date.get()
 
