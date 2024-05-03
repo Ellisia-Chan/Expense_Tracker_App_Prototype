@@ -23,6 +23,8 @@ Update/Remove Entry Window: <br><br>
 ![image](https://github.com/ChristianJude23/Final-Project-1st-YR-2nd-Sem/assets/152279955/9c98cb92-d764-4eb6-9e96-1dc2d9d8e81e)
 ![image](https://github.com/ChristianJude23/Final-Project-1st-YR-2nd-Sem/assets/152279955/b7a82464-2b9a-4819-831b-8a0abe0281fc)
 
+Calculator: <br><br>
+![image](https://github.com/ChristianJude23/Final-Project-1st-YR-2nd-Sem/assets/152279955/98669117-83e9-4fde-9de6-cdc367b2a22e)
 
 
 
