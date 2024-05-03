@@ -890,6 +890,8 @@ class MyApp(tk.Tk):
         if result:
             db.delete_all_data_in_table()
             self.load_entries()
+            self.update_total_balance()
+            self.menu_frame.place_forget()
             messagebox.showinfo("Success", "Successfully Cleared Data")
             
         
