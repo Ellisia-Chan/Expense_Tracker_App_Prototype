@@ -125,4 +125,10 @@ def delete_data_in_table(id, date):
         conn.close()
         return True
        
-    
+# Delete All data Entries    
+def delete_all_data_in_table():
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM entries")
+    conn.commit()
+    conn.close()

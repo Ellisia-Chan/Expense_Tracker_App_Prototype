@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, simpledialog
 from datetime import datetime, timedelta
 import db
 
@@ -262,16 +262,38 @@ class MyApp(tk.Tk):
         btn_edit.place(x=810, y=330)
 
         # Bot Frame
+        btn_records = tk.Button(
+            self.bot_frame,
+            text="🧾",
+            font=("katibeh", 26),
+            width=3,
+            bg="#FEFAF6",
+            cursor="hand2",
+        )
+        
         btn_add = tk.Button(
             self.bot_frame,
             text="+",
             font=("katibeh", 28),
+            width=3,
             bg="#FEFAF6",
             cursor="hand2",
             command=self.add_entry_win
         )
         
-        btn_add.place(x=430, y=0)
+        btn_chart = tk.Button(
+            self.bot_frame,
+            text="📊",
+            font=("katibeh", 26),
+            width=3,
+            bg="#FEFAF6",
+            cursor="hand2",
+        )
+
+        btn_records.place(x=280, y=0)
+        btn_add.place(x=400, y=0)
+        btn_chart.place(x=520, y=0)
+        
         
         # Menu Sidebar widgets
         btn_sidebar_menu_back = tk.Button(
@@ -349,7 +371,8 @@ class MyApp(tk.Tk):
             bg="#EADBC8",
             borderwidth=0,
             anchor="w",
-            relief="flat"
+            relief="flat",
+            command=self.clear_data
         )
         
         btn_about = tk.Button(
@@ -861,6 +884,14 @@ class MyApp(tk.Tk):
         self.update_frame.place_forget()
         self.remove_frame.place(x=10, y=10)
         
+    def clear_data(self):
+        result = messagebox.askyesno("Clear Data", "Do you want to Delete All Data? Data cannot be recovered after deletion")
+        
+        if result:
+            db.delete_all_data_in_table()
+            self.load_entries()
+            messagebox.showinfo("Success", "Successfully Cleared Data")
+            
         
 # Call StartUp
 # app = StartUp()
