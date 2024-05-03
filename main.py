@@ -1,7 +1,9 @@
 import tkinter as tk
+import db
+from calc import Calculator
 from tkinter import ttk, messagebox, simpledialog
 from datetime import datetime, timedelta
-import db
+
 
 
 class StartUp(tk.Tk):
@@ -77,7 +79,7 @@ class MyApp(tk.Tk):
         super().__init__()
         self.geometry("900x600+0+0")
         self.title("Pera ko")
-        self.resizable(False, False)       
+        self.resizable(False, False)
 
         # Check if Database exist, if not, create database file where the py file is located.
         db.create_database()
@@ -87,8 +89,6 @@ class MyApp(tk.Tk):
         self.load_entries()
         self.update_total_balance()
         
-        
-
     def create_widgets(self):
         # Frames
         self.top_frame = tk.Frame(self, width=900, height=130, bg="#102C57")
@@ -334,7 +334,8 @@ class MyApp(tk.Tk):
             bg="#EADBC8",
             borderwidth=0,
             anchor="w",
-            relief="flat"
+            relief="flat",
+            command=self.open_calculator
         )
         
         btn_currency = tk.Button(
@@ -396,7 +397,8 @@ class MyApp(tk.Tk):
             bg="#EADBC8",
             borderwidth=0,
             anchor="w",
-            relief="flat"
+            relief="flat",
+            command= self.destroy
         )
         
         # Create Bindings For top, mid, bot frame and widgets to close menu sidebar after off focus
@@ -893,7 +895,10 @@ class MyApp(tk.Tk):
             self.update_total_balance()
             self.menu_frame.place_forget()
             messagebox.showinfo("Success", "Successfully Cleared Data")
-            
+    
+    def open_calculator(self):
+        Calculator(self)
+                 
         
 # Call StartUp
 # app = StartUp()
