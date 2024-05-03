@@ -231,8 +231,9 @@ class MyApp(tk.Tk):
         style.configure("Custom.Treeview", font=("katibeh", 16), background="#EADBC8", fieldbackground="#EADBC8")
         style.configure("Custom.Treeview", rowheight=30)
 
-        # Disable TreeView Heading Resizing
+        # Disable TreeView Heading Resizing and selection
         self.tv_tree_view.bind('<Button-1>', 'break')
+        self.tv_tree_view.bind("<ButtonRelease-1>", lambda event: self.tv_tree_view.selection_remove(self.tv_tree_view.selection()))
 
         # TreeView Vertical ScrollBar
         scrollbar = ttk.Scrollbar(
@@ -308,6 +309,19 @@ class MyApp(tk.Tk):
             relief="flat"
         )
         
+        btn_currency = tk.Button(
+            self.menu_sidebar_child_frame,
+            text="Currency Converter",
+            font=("katibeh", 18, "bold"),
+            cursor="hand2",
+            width=15,
+            bg="#EADBC8",
+            borderwidth=0,
+            anchor="w",
+            relief="flat"
+        )
+        
+        
         btn_project_team = tk.Button(
             self.menu_sidebar_child_frame,
             text="Project Team",
@@ -371,12 +385,13 @@ class MyApp(tk.Tk):
         lbl_sidebar_title.place(x=70, y=60)
         self.menu_sidebar_child_frame.place(x=20, y=120)
         
-        # Menu Parent Frame Widgets pos
+        # Menu Child Frame Widgets pos
         btn_calculator.place(x=10, y=10)
-        btn_project_team.place(x=10, y=50)
-        btn_clear_data.place(x=10, y=90)
-        btn_about.place(x=10, y=130)
-        btn_exit.place(x=10, y=170)
+        btn_currency.place(x=10, y=50)
+        btn_project_team.place(x=10, y=90)
+        btn_clear_data.place(x=10, y=130)
+        btn_about.place(x=10, y=170)
+        btn_exit.place(x=10, y=210)
         
         
         # Enable Disable Widgets
@@ -433,7 +448,7 @@ class MyApp(tk.Tk):
             width=14
             )
         
-        self.ent_name.config(validate="key", validatecommand=(self.ent_name.register(lambda char: char.isalpha() or char == ""), "%S"))
+        self.ent_name.config(validate="key", validatecommand=(self.ent_name.register(lambda char: char.isalpha() or char == " "), "%S"))
         self.ent_amount.config(validate="key", validatecommand=(self.ent_amount.register(lambda char: char.isdigit() or char == ""), '%S'))
 
         self.ent_category.place(x=130, y=20)
@@ -450,7 +465,18 @@ class MyApp(tk.Tk):
             command=self.add_to_db
             )
         
-        btn_add.place(x=110, y=170)
+        # Cance Add Button
+        btn_cancel_add = tk.Button(
+            frame,
+            text="Cancel",
+            font=("katibeh", 16),
+            width=9,
+            cursor="hand2",
+            command=self.add_window.destroy
+            )
+        
+        btn_add.place(x=40, y=170)
+        btn_cancel_add.place(x=170, y=170)
 
     def edit_entries_window(self):
         self.edit_entries_win = tk.Toplevel()
