@@ -10,7 +10,20 @@ them, and view reports of their spending over time. Tkinter can be used to creat
 
 <br>
 
-![image](https://github.com/ChristianJude23/Final-Project-1st-YR-2nd-Sem/assets/152279955/6446f1fd-b37a-4181-887b-504d126bd3ab)
+Main window: <br><br>
+![image](https://github.com/ChristianJude23/Final-Project-1st-YR-2nd-Sem/assets/152279955/b8e7f6ac-4c4a-4d3b-a1de-91d50678ffc0)
+
+Menu Bar: <br><br>
+![image](https://github.com/ChristianJude23/Final-Project-1st-YR-2nd-Sem/assets/152279955/f9e5f1a2-4ea6-4e74-a422-00ce9de0ccd0)
+
+Add Entry Window: <br><br>
+![image](https://github.com/ChristianJude23/Final-Project-1st-YR-2nd-Sem/assets/152279955/03597335-9eff-495b-bacc-3f6bdc268106)
+
+Update/Remove Entry Window: <br><br>
+![image](https://github.com/ChristianJude23/Final-Project-1st-YR-2nd-Sem/assets/152279955/9c98cb92-d764-4eb6-9e96-1dc2d9d8e81e)
+![image](https://github.com/ChristianJude23/Final-Project-1st-YR-2nd-Sem/assets/152279955/b7a82464-2b9a-4819-831b-8a0abe0281fc)
+
+
 
 
 #
