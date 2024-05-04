@@ -1,10 +1,12 @@
 import tkinter as tk
 import db
 from calc import Calculator
-from tkinter import ttk, messagebox, simpledialog
+from currency_conv import CurrencyConverter
+from tkinter import ttk, messagebox
 from datetime import datetime, timedelta
 
-
+# For Installing lib
+# pip install pysqlite3 
 
 class StartUp(tk.Tk):
     def __init__(self):
@@ -347,7 +349,8 @@ class MyApp(tk.Tk):
             bg="#EADBC8",
             borderwidth=0,
             anchor="w",
-            relief="flat"
+            relief="flat",
+            command=self.open_currency_converter
         )
         
         
@@ -407,7 +410,9 @@ class MyApp(tk.Tk):
         self.bot_frame.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
         self.tv_tree_view.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
         self.btn_date_next.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
+        btn_records.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
         btn_add.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
+        btn_chart.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
         scrollbar.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
         btn_edit.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
         
@@ -461,7 +466,8 @@ class MyApp(tk.Tk):
             values=["Income", "Expense"],
             font=("katibeh", 16),
             width=12,
-            )
+            state="readonly"
+        )
         
         self.ent_category.set("Expense")
         self.ent_category['validate'] = 'key'
@@ -610,6 +616,7 @@ class MyApp(tk.Tk):
             values=["Income", "Expense"],
             font=("katibeh", 14),
             width=15,
+            state="readonly"
             )
         
         self.ent_update_category.set("Expense")
@@ -869,9 +876,7 @@ class MyApp(tk.Tk):
                 self.update_total_balance()
         else:
             messagebox.showerror("Error", "Please fill in all fields")   
-            
-    
-                
+                           
     # Update Entry Window Enable/Disable Displayed Widgets
     def update_window(self):
         self.remove_frame.place_forget()
@@ -898,6 +903,10 @@ class MyApp(tk.Tk):
     
     def open_calculator(self):
         Calculator(self)
+    
+    def open_currency_converter(self):
+        CurrencyConverter(self)
+        
                  
         
 # Call StartUp

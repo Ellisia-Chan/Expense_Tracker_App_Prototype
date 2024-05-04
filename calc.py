@@ -250,34 +250,39 @@ class Calculator:
         # Delete Chars int Ent Field
         self.ent_num_field.delete(0, tk.END)
         # Re-enable validation
-        self.ent_num_field.config(validate="key", validatecommand=(self.ent_num_field.register(lambda char: char.isdigit() or char == "" or char in "-+÷%.x(()"), "%S"))    
+        self.ent_num_field.config(validate="key", validatecommand=(self.ent_num_field.register(lambda char: char.isdigit() or char in "-+÷%x()" or char == ""), "%S"))    
     
     
     def delete(self):
         expression = self.ent_num_field.get()
         back = expression[:-1]
         self.clear()
+        self.ent_num_field.config(validate="none")
         self.ent_num_field.insert(0, back)
+        self.ent_num_field.config(validate="key", validatecommand=(self.ent_num_field.register(lambda char: char.isdigit() or char in "-+÷%x()" or char == ""), "%S")) 
         
     def calculate(self):
-        expression = self.ent_num_field.get()
-        
-        expression = expression.replace("÷", "/")
-        expression = expression.replace("x", "*")
-        
-        expression = re.sub(r'(\d+)(\()', r'\1*\2', expression)
-        expression = re.sub(r'(\))(\d+)', r'\1*\2', expression)
-        
         try:
+            expression = self.ent_num_field.get()
             if expression != "":
+                expression = re.sub(r'(\d+)(\()', r'\1*\2', expression)
+                expression = re.sub(r'(\))(\d+)', r'\1*\2', expression)
+        
+                expression = expression.replace("÷", "/")
+                expression = expression.replace("x", "*")
                 result = eval(expression)
                 self.clear()
-                self.ent_num_field.insert(tk.END, result)
-        
+                self.ent_num_field.config(validate="none")               
+                self.ent_num_field.insert(tk.END, str(result))
+                self.ent_num_field.config(validate="key", validatecommand=(self.ent_num_field.register(lambda char: char.isdigit() or char in "-+÷%x()" or char == ""), "%S")) 
+                
+
         except ZeroDivisionError:
             messagebox.showerror('Error', "Division by zero is not allowed.")
+            self.clear()
         except SyntaxError:
             messagebox.showerror('Error', "Invalid Syntax")
+            self.clear()
             
     def back_to_main(self):
         self.win.destroy()   
