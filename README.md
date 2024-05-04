@@ -26,6 +26,8 @@ Update/Remove Entry Window: <br><br>
 Calculator: <br><br>
 ![image](https://github.com/ChristianJude23/Final-Project-1st-YR-2nd-Sem/assets/152279955/98669117-83e9-4fde-9de6-cdc367b2a22e)
 
+Currency Converter: <br><br>
+![image](https://github.com/ChristianJude23/Final-Project-1st-YR-2nd-Sem/assets/152279955/d3b81042-314f-48f6-bc08-780a60a37d10)
 
 
 #
