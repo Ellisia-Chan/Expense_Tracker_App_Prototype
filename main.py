@@ -30,7 +30,7 @@ class StartUp(tk.Tk):
 
     def create_widgets(self):
         # Frame
-        self.frame = tk.Frame(
+        self.frame_parent = tk.Frame(
             self,
             width=500,
             height=200,
@@ -39,37 +39,45 @@ class StartUp(tk.Tk):
             bg="#102C57"
         )
         
+        self.frame_child = tk.Frame(
+            self.frame_parent,
+            width=480,
+            height=180,
+            bd=5,
+            relief=tk.GROOVE,
+            bg="#EADBC8"
+        )
+        
       # Lbl
         lbl_title = tk.Label(
-            self.frame,
+            self.frame_child,
             text="Pera Ko",
             font=("kuashan script", 40, "bold"),
-            bg="#102C57",
-            fg="#fff"
+            bg="#EADBC8"
         )
 
         self.lbl_loading = tk.Label(
-            self.frame,
+            self.frame_child,
             text="0 %",
             font=("kuashan script", 18, "bold"),
-            bg="#102C57",
-            fg="#fff"
+            bg="#EADBC8"
         )
         
         # Widget Pos
         # Frame
-        self.frame.pack()
+        self.frame_parent.pack()
+        self.frame_child.place(x=5, y=5)
         
         # Lbl        
-        lbl_title.place(x=150, y=50)
-        self.lbl_loading.place(x=230, y=120)
+        lbl_title.place(x=130, y=50)
+        self.lbl_loading.place(x=200, y=120)
         
     # Loading Progress Counter
     def loading(self, progress):
         if progress <= 100:
             self.lbl_loading.config(text=f"{progress} %")
             progress += 1
-            self.after(10, self.loading, progress)
+            self.after(2, self.loading, progress)
         else:
             self.destroy()
             window = MyApp()
@@ -906,13 +914,11 @@ class MyApp(tk.Tk):
     
     def open_currency_converter(self):
         CurrencyConverter(self)
-        
-                 
-        
+                                 
 # Call StartUp
-# app = StartUp()
-# app.mainloop()
+app = StartUp()
+app.mainloop()
 
 # Call Main Window
-win = MyApp()
-win.mainloop()
+# win = MyApp()
+# win.mainloop()
