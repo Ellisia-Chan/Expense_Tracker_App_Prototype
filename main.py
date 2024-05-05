@@ -103,10 +103,11 @@ class MyApp(tk.Tk):
         # Frames
         self.top_frame = tk.Frame(self, width=900, height=130, bg="#102C57")
         self.mid_frame = tk.Frame(self, width=900, height=400, bg="#EADBC8")
+        self.chart_frame = tk.Frame(self, width=900, height=470, bg="#EADBC8")
         self.bot_frame = tk.Frame(self, width=900, height=70, bg="#102C57")
         
         self.menu_frame = tk.Frame(self, width=300, height=600, bg="#102C57", bd=4, relief=tk.GROOVE)
-
+        
         # Frames pos
         self.top_frame.place(x=0, y=0)
         self.mid_frame.place(x=0, y=130)
@@ -124,7 +125,7 @@ class MyApp(tk.Tk):
             fg="#fff"
         )
         
-        lbl_expenses = tk.Label(
+        self.lbl_expenses = tk.Label(
             self.top_frame,
             text="Expenses",
             font=("katibeh", 14, "bold"),
@@ -132,7 +133,7 @@ class MyApp(tk.Tk):
             fg="#fff"
         )
         
-        lbl_income = tk.Label(
+        self.lbl_income = tk.Label(
             self.top_frame,
             text="Income",
             font=("katibeh", 14, "bold"),
@@ -140,7 +141,7 @@ class MyApp(tk.Tk):
             fg="#fff"
         )
         
-        lbl_balance = tk.Label(
+        self.lbl_balance = tk.Label(
             self.top_frame,
             text="Balance",
             font=("katibeh", 14, "bold"),
@@ -207,9 +208,9 @@ class MyApp(tk.Tk):
 
         # Top Frame Widgets pos
         self.lbl_date.place(x=160, y=50)
-        lbl_expenses.place(x=440, y=30)
-        lbl_income.place(x=580, y=30)
-        lbl_balance.place(x=730, y=30)
+        self.lbl_expenses.place(x=440, y=30)
+        self.lbl_income.place(x=580, y=30)
+        self.lbl_balance.place(x=730, y=30)
 
         self.lbl_expenses_amount.place(x=440, y=60)
         self.lbl_income_amount.place(x=580, y=60)
@@ -279,6 +280,7 @@ class MyApp(tk.Tk):
             width=3,
             bg="#FEFAF6",
             cursor="hand2",
+            command=self.show_records
         )
         
         btn_add = tk.Button(
@@ -298,13 +300,17 @@ class MyApp(tk.Tk):
             width=3,
             bg="#FEFAF6",
             cursor="hand2",
+            command=self.show_chart
         )
 
         btn_records.place(x=280, y=0)
         btn_add.place(x=400, y=0)
         btn_chart.place(x=520, y=0)
         
+        # Chart Widgets
+
         
+                
         # Menu Sidebar widgets
         btn_sidebar_menu_back = tk.Button(
             self.menu_frame,
@@ -415,6 +421,7 @@ class MyApp(tk.Tk):
         # Create Bindings For top, mid, bot frame and widgets to close menu sidebar after off focus
         self.top_frame.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
         self.mid_frame.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
+        self.chart_frame.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
         self.bot_frame.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
         self.tv_tree_view.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
         self.btn_date_next.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
@@ -443,7 +450,48 @@ class MyApp(tk.Tk):
         today = datetime.now().strftime("%B %d, %Y")
         if self.current_date.get() == today:
             self.btn_date_next.config(state="disabled")
+            
+    # Show Records or Charts in main window
+    def show_records(self):
+        self.mid_frame.place(x=0, y=130)
+        self.top_frame.config(height=130)
+        self.lbl_date.place(x=160, y=50)
+        self.lbl_expenses.place(x=440, y=30)
+        self.lbl_income.place(x=580, y=30)
+        self.lbl_balance.place(x=730, y=30)
 
+        self.lbl_expenses_amount.place(x=440, y=60)
+        self.lbl_income_amount.place(x=580, y=60)
+        self.lbl_amount_amount.place(x=730, y=60)
+
+        self.btn_date_next.place(x=360, y=50)
+        self.btn_date_previous.place(x=100, y=50)
+        
+        self.chart_frame.place_forget()
+        
+    
+    def show_chart(self):
+        # Remove Widgets in Top Frame
+        widgets = [
+            self.mid_frame,
+            self.lbl_date,
+            self.lbl_expenses,
+            self.lbl_income,
+            self.lbl_balance,
+            self.lbl_expenses_amount,
+            self.lbl_income_amount,
+            self.lbl_amount_amount,
+            self.btn_date_next,
+            self.btn_date_previous
+        ]        
+        for widget in widgets:
+            widget.place_forget()
+            
+        self.top_frame.config(height=60)
+        
+        # Widgets pos
+        self.chart_frame.place(x=0, y=60)
+        
     # App Window PopUps
     def add_entry_win(self):
         self.add_window = tk.Toplevel(self)
@@ -523,7 +571,7 @@ class MyApp(tk.Tk):
         
         btn_add.place(x=40, y=170)
         btn_cancel_add.place(x=170, y=170)
-
+      
     def edit_entries_window(self):
         self.edit_entries_win = tk.Toplevel()
         self.edit_entries_win.title("Options")
@@ -916,9 +964,9 @@ class MyApp(tk.Tk):
         CurrencyConverter(self)
                                  
 # Call StartUp
-app = StartUp()
-app.mainloop()
+# app = StartUp()
+# app.mainloop()
 
 # Call Main Window
-# win = MyApp()
-# win.mainloop()
+win = MyApp()
+win.mainloop()
