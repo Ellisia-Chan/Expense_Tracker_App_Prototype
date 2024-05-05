@@ -125,6 +125,7 @@ class MyApp(tk.Tk):
             fg="#fff"
         )
         
+        # Lable for expense/income/balance
         self.lbl_expenses = tk.Label(
             self.top_frame,
             text="Expenses",
@@ -283,7 +284,7 @@ class MyApp(tk.Tk):
             command=self.show_records
         )
         
-        btn_add = tk.Button(
+        self.btn_add = tk.Button(
             self.bot_frame,
             text="+",
             font=("katibeh", 28),
@@ -304,12 +305,56 @@ class MyApp(tk.Tk):
         )
 
         btn_records.place(x=280, y=0)
-        btn_add.place(x=400, y=0)
+        self.btn_add.place(x=400, y=0)
         btn_chart.place(x=520, y=0)
         
         # Chart Widgets
-
+        months = [
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December'
+        ]
         
+        year = []
+        
+        current_month_number = datetime.now().month
+        current_month_name = datetime.now().strftime('%B')
+        current_year = datetime.now().year
+        current_year_str = str(current_year)
+        
+        year.append(current_year_str) if current_year_str not in year else None
+
+            
+        self.chart_month = ttk.Combobox(
+            self.chart_frame,
+            values=months,
+            font=("katibeh", 16),
+            width=16,
+            state="readonly"
+        )
+        self.chart_month.set(current_month_name)
+        
+        self.chart_year = ttk.Combobox(
+            self.chart_frame,
+            values=year,
+            font=("katibeh", 16),
+            width=12,
+            state="readonly"
+        )
+        self.chart_year.set(current_year_str)
+        
+        # Chart Frame Widgets pos
+        self.chart_month.place(x=20, y=20)
+        self.chart_year.place(x=250, y=20)
                 
         # Menu Sidebar widgets
         btn_sidebar_menu_back = tk.Button(
@@ -426,7 +471,7 @@ class MyApp(tk.Tk):
         self.tv_tree_view.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
         self.btn_date_next.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
         btn_records.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
-        btn_add.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
+        self.btn_add.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
         btn_chart.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
         scrollbar.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
         btn_edit.bind('<Button-1>', self.menu_sidebar_outside_frame_click)
@@ -467,6 +512,8 @@ class MyApp(tk.Tk):
         self.btn_date_next.place(x=360, y=50)
         self.btn_date_previous.place(x=100, y=50)
         
+        self.btn_add.config(state="normal")
+        
         self.chart_frame.place_forget()
         
     
@@ -486,7 +533,8 @@ class MyApp(tk.Tk):
         ]        
         for widget in widgets:
             widget.place_forget()
-            
+        
+        self.btn_add.config(state="disabled")
         self.top_frame.config(height=60)
         
         # Widgets pos
