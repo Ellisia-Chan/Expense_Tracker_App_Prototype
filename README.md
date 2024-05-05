@@ -8,6 +8,13 @@
 Expense Tracker. Build an expense tracker where users can input their expenses, categorize
 them, and view reports of their spending over time. Tkinter can be used to create the interface for adding expenses and generating reports.
 
+
+
+# New GUI
+
+![image](https://github.com/owenlim225/Money-tracker-app/assets/87555304/dba7a538-c18d-4039-8a35-13eeb5643b11)
+
+
 <br>
 
 Main window: <br><br>
