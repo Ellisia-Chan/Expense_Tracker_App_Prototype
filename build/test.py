@@ -1,76 +1,7 @@
-# Customized GUI made from figma, credits to the Tkinter Designer by Parth Jadhav to generate the file
-# https://github.com/ParthJadhav/Tkinter-Designer
-
-
 import tkinter as tk
-# import db
+from tkinter import Button, PhotoImage, ttk
 from pathlib import Path
-from tkinter import Canvas, Button, PhotoImage, ttk, messagebox
-from datetime import datetime, timedelta
-from PIL import Image, ImageTk
 
-
-
-# Seperate file for the app functions
-from function_list import add_button
-from currency_conv import CurrencyConverter
-from calc import Calculator
-
-
-# Class of the loading screen
-class LoadingScreen(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.overrideredirect(True)
-        self.resizable(False, False)
-
-        # Center LoadingScreen Window
-        self.update_idletasks()
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-        window_width = self.winfo_reqwidth()
-        window_height = self.winfo_reqheight()
-        x = (screen_width - window_width) // 2
-        y = (screen_height - window_height) // 2
-        self.geometry("+{}+{}".format(x, y))
-
-        # Call methods
-        self.loading_screen()
-        self.loading(0)
-
-
-
-    # Loading screen of the app 
-    def loading_screen(self):
-        # Frame
-        self.frame = tk.Frame(self, width=500, height=200, bd=10, relief=tk.GROOVE, bg="#102C57")
-        
-        # Lbl
-        lbl_title = tk.Label(self.frame, text="Pera Ko", font=("kuashan script", 40, "bold"), bg="#102C57", fg="#fff")
-        self.lbl_loading = tk.Label(self.frame, text="0 %", font=("kuashan script", 18, "bold"), bg="#102C57", fg="#fff")
-        
-        # Widget Pos
-        # Frame
-        self.frame.pack()
-        
-        # Lbl        
-        lbl_title.place(x=150, y=50)
-        self.lbl_loading.place(x=230, y=120)
-        
-    # Loading Progress Counter
-    def loading(self, progress):
-        if progress <= 100:
-            self.lbl_loading.config(text=f"{progress} %")
-            progress += 1
-            self.after(10, self.loading, progress)
-        else:
-            self.destroy()
-            window = MyApp()
-            window.mainloop()
-
-
-
-# Class of the main program
 class MyApp(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -83,13 +14,10 @@ class MyApp(tk.Tk):
         self.geometry("700x600")
         self.configure(bg="#FFFFFF")
         self.title("Pera ko, a money tracker app made by Group 4")
-        self.resizable(False, False)
-        self.protocol("WM_DELETE_WINDOW", self.exit_confirmation)
 
         self.canvas()
-        self.load_entries()
-        self.update_total_balance()
-        
+        # self.load_entries()
+        # self.update_total_balance()
 
         # Global variable to store the sidebar frame
         self.menu_frame = None
@@ -134,7 +62,6 @@ class MyApp(tk.Tk):
 
         self.bg_flower6_img = PhotoImage(file=self.relative_to_assets("bg_flower6.png"))
         self.bg_flower6 = self.canvas.create_image(677, 48, image=self.bg_flower6_img)
-
 
         # -------------------------------------Top widgets-------------------------------------#
 
@@ -263,7 +190,6 @@ class MyApp(tk.Tk):
                                    command=self.add_button, relief="flat")
         self.btn_add_item.place(x=585.0, y=403.0, width=102.0, height=102.0)
 
-
     # Get access to the asset files from directory path
     def relative_to_assets(self, path: str) -> Path:
         return self.ASSETS_PATH / Path(path)
@@ -272,181 +198,40 @@ class MyApp(tk.Tk):
     def add_button(self):
         add_button(self)
 
-
-
-        # -------------------------------------Menu sidebar-------------------------------------#
-
-    # Function to toggle menu visibility
-    def create_menu(self):
-        self.menu_frame = tk.Frame(self, bg="#EADBC8", width=200, bd=15, relief=tk.RIDGE)
-        self.menu_frame.place(x=0, y=0, relheight=1)  # Adjust the position as needed
-
-        # Create buttons inside the menu frame
-        self.button_frame = tk.Frame(self.menu_frame, bg="#EADBC8", width=100, padx=20, pady=20)
-
-        btn_project_team = tk.Button(self.button_frame, text="Project Team", font=("katibeh", 18, "bold"), cursor="hand2",
-                                    width=10, bg="#0065FF", fg="#F0F0F0", borderwidth=0, anchor="w", relief="flat",
-                                    padx=10,
-                                    command=self.project_team)
-        btn_project_team.pack(fill="x", pady=5)
-
-        btn_clear_data = tk.Button(self.button_frame, text="Clear Data", font=("katibeh", 18, "bold"), cursor="hand2",
-                                width=10, bg="#0065FF", fg="#F0F0F0", borderwidth=0, anchor="w", relief="flat", padx=10,
-                                command=self.clear_data)
-        btn_clear_data.pack(fill="x", pady=5)
-
-        btn_about = tk.Button(self.button_frame, text="About", font=("katibeh", 18, "bold"), cursor="hand2",
-                            width=10, bg="#0065FF", fg="#F0F0F0", borderwidth=0, anchor="w", relief="flat", padx=10,
-                            command=self.show_about)
-        btn_about.pack(fill="x", pady=5)
-
-        btn_exit = tk.Button(self.button_frame, text="Exit", font=("katibeh", 18, "bold"), cursor="hand2",
-                            width=10, bg="#0065FF", fg="#F0F0F0", borderwidth=0, anchor="w", relief="flat", padx=10,
-                            command=self.exit_confirmation)
-        btn_exit.pack(fill="x", pady=5)
-
-        # Pack the button frame after creating all buttons
-        self.button_frame.pack()
-
-        # Menu Sidebar widgets
-        btn_sidebar_menu_back = tk.Button(self.menu_frame, text="<", font=("impact", 25, "bold"), cursor="hand2",
-                                        width=2, fg="#1E1F1E", bg="#EADBC8", borderwidth=0, anchor="w", relief="flat",
-                                        command=lambda: self.menu_frame.place_forget())
-        btn_sidebar_menu_back.place(x=20, y=500)
-
-        # Bindings to close menu sidebar after off focus
-        self.bind("<Button-1>", self.close_menu)
-
     # Function to toggle menu visibility
     def toggle_menu(self):
         if self.menu_frame:
-            self.menu_frame.place_forget()
+            self.menu_frame.destroy()
             self.menu_frame = None
         else:
-            self.create_menu()
+            self.menu_frame = tk.Frame(self, bg="#102C57", width=200)
+            self.menu_frame.place(x=0, y=0, relheight=1)  # Adjust the position as needed
 
-    # Function to close menu sidebar when clicked outside
-    def close_menu(self, event):
-        if self.menu_frame:
-            x, y = event.x_root, event.y_root
-            if not (0 <= x <= 200 and 0 <= y <= self.winfo_screenheight()):
-                self.menu_frame.place_forget()
-                self.menu_frame = None
+            # Define button commands
+            def button1_command():
+                # Add your desired action for button 1
+                pass
 
+            def button2_command():
+                # Add your desired action for button 2
+                pass
 
+            def button3_command():
+                # Add your desired action for button 3
+                pass
 
+            # Create buttons inside the menu frame
+            btn1 = tk.Button(self.menu_frame, text="Button 1", command=button1_command, bg="#102C57", fg="#fff")
+            btn1.pack(fill="x", pady=5)
 
+            btn2 = tk.Button(self.menu_frame, text="Button 2", command=button2_command, bg="#102C57", fg="#fff")
+            btn2.pack(fill="x", pady=5)
 
-
-
-
-
-
-
-
-
-
-    # Show the image of the project team together with their role to the gruop
-    def project_team(self):
-        # Create a new window
-        self.proj_team_win = tk.Toplevel(self)
-        self.proj_team_win.title("Project Team: Thank you for using our app!")
-        self.proj_team_win.resizable(False, False)
-        self.proj_team_win.configure(bd=20, relief=tk.RIDGE)
-
-        # Load and display the image on a canvas
-        proj_team_img = Image.open(self.relative_to_assets("project_team.png"))  # Open image using PIL
-        img_width, img_height = proj_team_img.size  # Get dimensions of the image
-
-        # Resize canvas and window based on image dimensions
-        canvas = tk.Canvas(self.proj_team_win, bg="#FFFFFF", width=img_width, height=img_height, bd=0, highlightthickness=0, relief="ridge")
-        canvas.pack(fill=tk.BOTH, expand=True)  # Expand canvas to fill window
-        bg_proj_team = ImageTk.PhotoImage(proj_team_img)  # Convert image to Tkinter PhotoImage
-        canvas.create_image(0, 0, anchor=tk.NW, image=bg_proj_team)  # Display image on canvas
-
-        # Retain reference to the image to prevent it from being garbage collected
-        canvas.image = bg_proj_team
-
-        # Add frame for additional information
-        info_frame = tk.Frame(self.proj_team_win, bg="white", bd=0, relief="ridge")
-        info_frame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
-
-        # Divide frame into 5 columns and 3 rows
-        for i in range(3):
-            info_frame.grid_rowconfigure(i, weight=1)
-        for i in range(5):
-            info_frame.grid_columnconfigure(i, weight=1)
-
-        # Add "Group 4" label in the first row
-        group_label = tk.Label(info_frame, text="Group 4", bg="white", font=("times new roman", 20, "bold"))
-        group_label.grid(row=0, column=0, columnspan=5, sticky="nsew")
-
-        # Names in the second row
-        names = [
-            "Sean Matthew Lee P. Narvaez",
-            "Prince Harvey M. Casula",
-            "Sherwin P. Limosnero",
-            "Christian Jude N. Villaber",
-            "Adrian V. Cagampang"
-        ]
-        for i, name in enumerate(names):
-            name_label = tk.Label(info_frame, text=name, bg="white")
-            name_label.grid(row=1, column=i, sticky="nsew")
-
-        # Roles in the third row
-        roles = [
-            "Documentation Lead",
-            "Technical Writer",
-            "Designer (UI/UX) & Project Manager",
-            "Chief Developer",
-            "Asst. Tech. Writer"
-        ]
-        for i, role in enumerate(roles):
-            role_label = tk.Label(info_frame, text=role, bg="white")
-            role_label.grid(row=2, column=i, sticky="nsew")
+            btn3 = tk.Button(self.menu_frame, text="Button 3", command=button3_command, bg="#102C57", fg="#fff")
+            btn3.pack(fill="x", pady=5)
 
 
-
-
-
-
-
-
-    # Ask for confirmation when exit (x) clicked
-    def exit_confirmation(self):
-        if messagebox.askokcancel("Exit", "Do you really want to exit?"):
-            self.destroy()
-
-
-    #About Menu
-    def show_about(self):
-        # Message to display
-        about_message = """
-        Pera Ko
-        
-  Expense tracker App
-    v1.0 (ALPHA ver)
-
-    Chief Developer:
-Christian Jude N. Villaber
-
-    Designer (UI/UX):
-  Sherwin P. Limosnero
-        """
-
-        # Display the message box centered on the screen
-        messagebox.showinfo("About", about_message)
-
-    def clear_data(self):
-        pass
-
-    def load_entries(self):
-        pass
-    
-    def update_total_balance(self):
-        pass
-    
 # Start the program
 if __name__ == "__main__":
-    app = LoadingScreen()
+    app = MyApp()
     app.mainloop()
