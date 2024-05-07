@@ -136,19 +136,194 @@ def add_entry_win(self):
     btn_cancel_add.place(x=170, y=170)
     
 
-
-
-
-
-
-
-
-
-
-
 def update_window(self):
-    self.remove_frame.place_forget()
-    self.update_frame.place(x=10, y=10)
+        self.edit_entries_win = tk.Toplevel(root)
+        self.edit_entries_win.title("Options")
+        self.edit_entries_win.geometry("400x400")
+        self.edit_entries_win.resizable(False, False)
+        self.edit_entries_win.grab_set()
+           
+        # Frames
+        frame1 = tk.Frame(self.edit_entries_win, height=100, width=400, bg="#102C57")
+        frame2 = tk.Frame(self.edit_entries_win, height=300, width=400, bg="#EADBC8")
+        self.update_frame = tk.Frame(frame2, height=280, width=380, bg="#102C57", bd=3, relief=tk.GROOVE)
+        self.remove_frame = tk.Frame(frame2, height=280, width=380, bg="#102C57", bd=3, relief=tk.GROOVE)
+
+        # Frame pos
+        frame1.place(x=0, y=0)
+        frame2.place(x=0, y=100)
+
+        # Frame 1 Widgets
+        # Btn
+        btn_update = tk.Button(
+            frame1,
+            text="Update",
+            font=("katibeh", 16),
+            cursor="hand2",
+            command=self.update_window
+        )
+        
+        btn_remove = tk.Button(
+            frame1,
+            text="Remove",
+            font=("katibeh", 16),
+            cursor="hand2",
+            command=self.remove_window
+        )
+
+        # Btn Pos
+        btn_update.place(x=100, y=30)
+        btn_remove.place(x=200, y=30)
+
+        # Update Frame Widgets
+        # Label Update Frame
+        lbl_update_id = tk.Label(
+            self.update_frame,
+            text="ID:",
+            font=("katibeh", 18),
+            bg="#102C57",
+            fg="#fff"
+            )
+        
+        lbl_update_name = tk.Label(
+            self.update_frame,
+            text="Name:",
+            font=("katibeh", 18),
+            bg="#102C57",
+            fg="#fff"
+            )
+        
+        lbl_update_category = tk.Label(
+            self.update_frame,
+            text="Category:",
+            font=("katibeh", 18),
+            bg="#102C57",
+            fg="#fff"
+            )
+        
+        lbl_update_amount = tk.Label(
+            self.update_frame,
+            text="Amount:",
+            font=("katibeh", 18),
+            bg="#102C57",
+            fg="#fff"
+            )
+
+        # Label Update Frame pos
+        lbl_update_id.place(x=50, y=20)
+        lbl_update_name.place(x=50, y=50)
+        lbl_update_category.place(x=50, y=80)
+        lbl_update_amount.place(x=50, y=110)
+
+        # Ent Update Frame
+        self.ent_update_id = tk.Entry(
+            self.update_frame,
+            font=("katibeh", 14),
+            width=23
+            )
+        
+        self.ent_update_name = tk.Entry(
+            self.update_frame,
+            font=("katibeh", 14)
+            )
+        
+        self.ent_update_id.config(validate="key", validatecommand=(self.ent_update_id.register(lambda char: char.isdigit() or char == ""), "%S")) 
+        self.ent_update_name.config(validate="key", validatecommand=(self.ent_update_id.register(lambda char: char.isalpha() or char == ""), "%S"))
+
+        # ComboBox Entry Update Frame
+        self.ent_update_category = ttk.Combobox(
+            self.update_frame,
+            values=["Income", "Expense"],
+            font=("katibeh", 14),
+            width=15,
+            state="readonly"
+            )
+        
+        self.ent_update_category.set("Expense")
+        self.ent_update_category.config(validate="key", validatecommand=(self.ent_update_category.register(lambda char: char.isdigit() and char.isalpha() or char == ""), "%S"))
+
+        self.ent_update_amount = tk.Entry(
+            self.update_frame,
+            font=("katibeh", 14),
+            width=18
+            )
+        
+        self.ent_update_amount.config(validate="key", validatecommand=(self.ent_update_amount.register(lambda char: char.isdigit() or char == ""), "%S"))
+
+        # Ent Update Frame pos
+        self.ent_update_id.place(x=100, y=22)
+        self.ent_update_name.place(x=130, y=53)
+        self.ent_update_category.place(x=170, y=83)
+        self.ent_update_amount.place(x=150, y=114)
+
+        # Btn Update Frame
+        btn_update_frame = tk.Button(
+            self.update_frame,
+            text="Update",
+            font=("katibeh", 16),
+            width=10,
+            cursor="hand2", 
+            )
+        
+        btn_update_cancel_frame = tk.Button(
+            self.update_frame,
+            text="Cancel",
+            font=("katibeh", 16),
+            width=8,
+            cursor="hand2",
+            command=self.edit_entries_win.destroy
+            )
+
+        # Btn Update Frame pos
+        btn_update_frame.place(x=120, y=170)
+        btn_update_cancel_frame.place(x=130, y=220)
+
+        # Remove Frame Widgets
+        # Lbl Remove Frame
+        lbl_remove_id = tk.Label(
+            self.remove_frame,
+            text="ID:",
+            font=("katibeh", 18),
+            bg="#102C57",
+            fg="#fff"
+            )
+
+        # Lbl Remove Frame pos
+        lbl_remove_id.place(x=50, y=80)
+
+        # Ent Remove Frame
+        self.ent_remove_id = tk.Entry(
+            self.remove_frame,
+            font=("katibeh", 14),
+            width=18
+            )
+        
+        self.ent_remove_id.config(validate="key", validatecommand=(self.ent_remove_id.register(lambda char: char.isdigit() or char == ""), "%S"))
+
+        # Ent Remove Frame pos
+        self.ent_remove_id.place(x=120, y=83)
+
+        # Btn Remove Frame
+        btn_remove_frame = tk.Button(
+            self.remove_frame,
+            text="Remove",
+            font=("katibeh", 16),
+            width=10,
+            cursor="hand2",
+            )
+        
+        btn_remove_cancel_frame = tk.Button(
+            self.remove_frame,
+            text="Cancel",
+            font=("katibeh", 16),
+            width=8,
+            cursor="hand2",
+            command=self.edit_entries_win.destroy
+            )
+
+        # Btn Remove Frame pos
+        btn_remove_frame.place(x=120, y=170)
+        btn_remove_cancel_frame.place(x=130, y=220)
 
 
 
