@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 
 
 # Seperate file for the app functions
-from function_list import create_new_window
+from build.function_list import create_new_window
 
 
 

@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 
 
 # Seperate file for the app functions
-from function_list import add_button
+from build.function_list import add_button
 from currency_conv import CurrencyConverter
 from calc import Calculator
 

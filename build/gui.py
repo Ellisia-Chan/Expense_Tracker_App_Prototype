@@ -1,18 +1,18 @@
 # Customized GUI made from figma, credits to the Tkinter Designer by Parth Jadhav to generate the file
 # https://github.com/ParthJadhav/Tkinter-Designer
 
-
+import db
 import tkinter as tk
-# import db
+import datetime
 from pathlib import Path
-from tkinter import Canvas, Button, PhotoImage, ttk, messagebox
-from datetime import datetime, timedelta
+from tkinter import Button, PhotoImage, ttk, messagebox
+from datetime import datetime
 from PIL import Image, ImageTk
-
+from idlelib.tooltip import Hovertip
 
 
 # Seperate file for the app functions
-from function_list import add_button
+from function_list import add_button, add_entry_win, add_to_db, previous_date, next_date,edit_entries_window, load_entries, update_amount_label
 from currency_conv import CurrencyConverter
 from calc import Calculator
 
@@ -93,6 +93,11 @@ class MyApp(tk.Tk):
 
         # Global variable to store the sidebar frame
         self.menu_frame = None
+        
+        # Check if Database exist, if not, create database file where the py file is located.
+        db.create_database()
+
+
 
     # Canvas to create the base frame of the app        
     def canvas(self):
@@ -138,40 +143,46 @@ class MyApp(tk.Tk):
 
         # -------------------------------------Top widgets-------------------------------------#
 
+
         # Date Label
-        self.lbl_date_img = PhotoImage(file=self.relative_to_assets("lbl_date.png"))
-        self.lbl_date = self.canvas.create_image(126.0, 41.0, image=self.lbl_date_img)
+        self.current_date = tk.StringVar()
+        self.current_date.set(datetime.now().strftime("%B %d, %Y"))
 
-        # Date button left (<)
-        self.btn_date_left_img = PhotoImage(file=self.relative_to_assets("btn_date_left.png"))
-        self.btn_date_left = Button(image=self.btn_date_left_img, borderwidth=0, highlightthickness=0,
-                                    command=lambda: print("btn_date_left clicked"), relief="flat")
-        self.btn_date_left.place(x=15.0, y=26.0, width=26.0, height=26.0)
+        self.lbl_date = tk.Label(self.canvas, textvariable=self.current_date, font=("katibeh", 17, "bold"), fg="#1E1F1E")
+        self.lbl_date.place(x=53, y=19)
+        
+        
+        # Date button previous (<)
+        self.btn_date_previous_img = PhotoImage(file=self.relative_to_assets("btn_date_left.png"))
+        self.btn_date_previous = Button(image=self.btn_date_previous_img, borderwidth=0, highlightthickness=0,
+                                    command=self.previous_date, relief="flat")
+        self.btn_date_previous.place(x=14, y=26.0, width=26.0, height=26.0)
 
-        # Date button right (>)
-        self.btn_date_right_img = PhotoImage(file=self.relative_to_assets("btn_date_right.png"))
-        self.btn_date_right = Button(image=self.btn_date_right_img, borderwidth=0, highlightthickness=0,
-                                     command=lambda: print("btn_date_right clicked"), relief="flat")
-        self.btn_date_right.place(x=211.0, y=26.0, width=26.0, height=26.0)
+        # Date button next (>)
+        self.btn_date_next_img = PhotoImage(file=self.relative_to_assets("btn_date_right.png"))
+        self.btn_date_next = Button(image=self.btn_date_next_img, borderwidth=0, highlightthickness=0,
+                                     command=self.next_date, relief="flat")
+        self.btn_date_next.place(x=211.0, y=26.0, width=26.0, height=26.0)
 
         # Expense Label
-        self.lbl_expense_amount_img = PhotoImage(file=self.relative_to_assets("lbl_expense_amount.png"))
-        self.lbl_expense_amount = self.canvas.create_image(324.0, 26.0, image=self.lbl_expense_amount_img)
-        self.canvas.create_text(287.0, 49.0, anchor="nw", text="₱6,000.00", fill="#CA0000",
-                                font=("AbrilFatface Regular", 15 * -1))
+        self.lbl_expenses_img = PhotoImage(file=self.relative_to_assets("lbl_expense_amount.png"))
+        self.lbl_expenses = self.canvas.create_image(324.0, 26.0, image=self.lbl_expenses_img)
+        self.lbl_expenses_amount = tk.Label(self.canvas, anchor="nw", text="₱0", font=("katibeh", 12, "bold"))
+        self.lbl_expenses_amount.place(x=278, y=40)
+
 
         # Income Label
-        self.lbl_income_amount_img = PhotoImage(file=self.relative_to_assets("lbl_income_amount.png"))
-        self.lbl_income_amount = self.canvas.create_image(467.0, 26.0, image=self.lbl_income_amount_img)
-        self.canvas.create_text(430.0, 49.0, anchor="nw", text="₱6,000.00", fill="#005D0B",
-                                font=("AbrilFatface Regular", 15 * -1))
-
+        self.lbl_income_img = PhotoImage(file=self.relative_to_assets("lbl_income_amount.png"))
+        self.lbl_income = self.canvas.create_image(467.0, 26.0, image=self.lbl_income_img)
+        self.lbl_income_amount = tk.Label(self.canvas, anchor="nw", text="₱0", font=("katibeh", 12, "bold"))
+        self.lbl_income_amount.place(x=450, y=40)
+        
         # Balance Label
-        self.lbl_balance_amount_img = PhotoImage(file=self.relative_to_assets("lbl_balance_amount.png"))
-        self.lbl_balance_amount = self.canvas.create_image(611.0, 26.0, image=self.lbl_balance_amount_img)
-        self.canvas.create_text(573.0, 49.0, anchor="nw", text="₱6,000.00", fill="#CA0000",
-                                font=("AbrilFatface Regular", 15 * -1))
-
+        self.lbl_balance_img = PhotoImage(file=self.relative_to_assets("lbl_balance_amount.png"))
+        self.lbl_balance = self.canvas.create_image(611.0, 26.0, image=self.lbl_balance_img)
+        self.lbl_balance_amount = tk.Label(self.canvas, anchor="nw", text="₱0", font=("katibeh", 12, "bold"))
+        self.lbl_balance_amount.place(x=600, y=40)
+        
         # -------------------------------------Mid widgets-------------------------------------#
 
         # Display tree view frame
@@ -205,6 +216,7 @@ class MyApp(tk.Tk):
         scrollbar = ttk.Scrollbar(self.mid_frame, orient="vertical", command=self.tv_tree_view.yview)
         scrollbar.pack(side="right", fill="y")
 
+
         # -------------------------------------Bottom widgets-------------------------------------#
 
         # Menu button
@@ -219,11 +231,11 @@ class MyApp(tk.Tk):
                                    command=lambda: print("btn_analysis clicked"), relief="flat")
         self.btn_analysis.place(x=175.0, y=525.0, width=70.0, height=70.0)
 
-        # Accounts button
-        self.btn_accounts_img = PhotoImage(file=self.relative_to_assets("btn_accounts.png"))
-        self.btn_accounts = Button(image=self.btn_accounts_img, borderwidth=0, highlightthickness=0,
-                                   command=lambda: print("btn_accounts clicked"), relief="flat")
-        self.btn_accounts.place(x=315.0, y=525.0, width=70.0, height=70.0)
+        # # Accounts button
+        # self.btn_accounts_img = PhotoImage(file=self.relative_to_assets("btn_accounts.png"))
+        # self.btn_accounts = Button(image=self.btn_accounts_img, borderwidth=0, highlightthickness=0,
+        #                            command=lambda: print("btn_accounts clicked"), relief="flat")
+        # self.btn_accounts.place(x=315.0, y=525.0, width=70.0, height=70.0)
 
         # Records button
         self.btn_records_img = PhotoImage(file=self.relative_to_assets("btn_records.png"))
@@ -231,48 +243,60 @@ class MyApp(tk.Tk):
                                   command=lambda: print("btn_records clicked"), relief="flat")
         self.btn_records.place(x=455.0, y=525.0, width=70.0, height=70.0)
 
-        # Search button
-        self.btn_search_img = PhotoImage(file=self.relative_to_assets("btn_search.png"))
-        self.btn_search = Button(image=self.btn_search_img, borderwidth=0, highlightthickness=0,
-                                 command=lambda: print("btn_search clicked"), relief="flat")
-        self.btn_search.place(x=617.0, y=525.0, width=70.0, height=70.0)
+        # # Search button
+        # self.btn_search_img = PhotoImage(file=self.relative_to_assets("btn_search.png"))
+        # self.btn_search = Button(image=self.btn_search_img, borderwidth=0, highlightthickness=0,
+        #                          command=lambda: print("btn_search clicked"), relief="flat")
+        # self.btn_search.place(x=617.0, y=525.0, width=70.0, height=70.0)
+
+
 
         # -------------------------------------Right widgets-------------------------------------#
+
 
         # Currency exchange button
         self.btn_currency_img = PhotoImage(file=self.relative_to_assets("btn_currency.png"))
         self.btn_currency = Button(image=self.btn_currency_img, borderwidth=0, highlightthickness=0,
-                                   command=lambda: print("open_currency_converter clicked"), relief="flat")
+                                   command=self.open_currency_converter, relief="flat")
         self.btn_currency.place(x=584.0, y=95.0, width=102.0, height=103.)
+        self.btn_currency = Hovertip(self.btn_currency,'Change currency of your choice') # Tool tip :>
+
 
         # Calculator button
         self.btn_calculator_img = PhotoImage(file=self.relative_to_assets("btn_calculator.png"))
         self.btn_calculator = Button(image=self.btn_calculator_img, borderwidth=0, highlightthickness=0,
-                                     command=lambda: print("open_calculator clicked"), relief="flat")
+                                     command=self.open_calculator, relief="flat")
         self.btn_calculator.place(x=585.0, y=198.0, width=102.0, height=102.0)
+        self.btn_calculator = Hovertip(self.btn_calculator,'Calculator') # Tool tip :>
+
 
         # Update button
         self.btn_edit_img = PhotoImage(file=self.relative_to_assets("btn_edit.png"))
         self.btn_edit = Button(image=self.btn_edit_img, borderwidth=0, highlightthickness=0,
-                               command=lambda: print("edit_entries_window clicked"), relief="flat")
+                               command=self.edit_entries_window, relief="flat")
         self.btn_edit.place(x=584.0, y=300.0, width=102.0, height=103.)
+        self.btn_edit = Hovertip(self.btn_edit,'Edit item on your treeview') # Tool tip :>
+
 
         # Add button
         self.btn_add_item_img = PhotoImage(file=self.relative_to_assets("btn_add_item.png"))
         self.btn_add_item = Button(image=self.btn_add_item_img, borderwidth=0, highlightthickness=0,
-                                   command=self.add_button, relief="flat")
+                                   command=self.add_entry_win, relief="flat")
         self.btn_add_item.place(x=585.0, y=403.0, width=102.0, height=102.0)
+        self.btn_add_item_tip = Hovertip(self.btn_add_item,'Add item on your treeview') # Tool tip :>
+
+
+    #------------------Date previous and next button function------------------#
+        # Disable Next button if Date is Current
+        today = datetime.now().strftime("%B %d, %Y")
+        if self.current_date.get() == today:
+            self.btn_date_next.config(state="disabled")
+        
 
 
     # Get access to the asset files from directory path
     def relative_to_assets(self, path: str) -> Path:
         return self.ASSETS_PATH / Path(path)
-
-    # Wrapper functions to call imported functions from function_list.py
-    def add_button(self):
-        add_button(self)
-
-
 
         # -------------------------------------Menu sidebar-------------------------------------#
 
@@ -332,6 +356,15 @@ class MyApp(tk.Tk):
             if not (0 <= x <= 200 and 0 <= y <= self.winfo_screenheight()):
                 self.menu_frame.place_forget()
                 self.menu_frame = None
+
+
+
+
+
+
+
+
+
 
 
 
@@ -418,6 +451,7 @@ class MyApp(tk.Tk):
             self.destroy()
 
 
+
     #About Menu
     def show_about(self):
         # Message to display
@@ -434,19 +468,60 @@ Christian Jude N. Villaber
   Sherwin P. Limosnero
         """
 
+
+
         # Display the message box centered on the screen
         messagebox.showinfo("About", about_message)
 
     def clear_data(self):
         pass
 
-    def load_entries(self):
-        pass
+
     
     def update_total_balance(self):
         pass
     
+    
+    
+    
+    
+    # Wrapper functions to call imported functions from function_list.py
+    def add_button(self):
+        add_button(self)
+
+    def open_calculator(self):
+        Calculator(self)    
+    
+    def open_currency_converter(self):
+        CurrencyConverter(self)
+        
+    def add_entry_win(self):
+        add_entry_win(self)
+        
+    def add_to_db(self):
+        add_to_db(self)        
+    
+    def next_date(self):
+        next_date(self)        
+    
+    def previous_date(self):
+        previous_date(self)  
+    
+    def edit_entries_window(self):
+        edit_entries_window(self)  
+    
+    def load_entries(self):
+        load_entries(self) 
+        
+    def update_amount_label(self):
+        update_amount_label(self)         
+        
+    
 # Start the program
 if __name__ == "__main__":
-    app = LoadingScreen()
+    # app = LoadingScreen()
+    # app.mainloop()
+    
+    app = MyApp()
     app.mainloop()
+
