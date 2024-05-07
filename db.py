@@ -1,5 +1,6 @@
 import sqlite3
 import os
+from datetime import datetime
 
 # Get the directory where the py script is located
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -132,3 +133,47 @@ def delete_all_data_in_table():
     cursor.execute("DELETE FROM entries")
     conn.commit()
     conn.close()
+    
+# Get total income/expenses in current month and year
+def get_income_expense_total(month, year):
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+    
+    # Construct the query to get income and expenses for the specified month and year
+    cursor.execute("SELECT SUM(amount) FROM entries WHERE SUBSTR(date, 1, INSTR(date, ' ') - 1) = ? AND SUBSTR(date, -4) = ? AND category = 'Income'", (month, year))
+    total_income = cursor.fetchone()[0]
+    
+    cursor.execute("SELECT SUM(amount) FROM entries WHERE SUBSTR(date, 1, INSTR(date, ' ') - 1) = ? AND SUBSTR(date, -4) = ? AND category = 'Expense'", (month, year))
+    total_expense = cursor.fetchone()[0]
+    
+    conn.close()
+    
+    if total_income is None:
+        total_income = 0
+    if total_expense is None:
+        total_expense = 0
+    
+    return total_income, total_expense
+
+# Get income list in current month and year
+def get_income_list(month, year):
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM entries WHERE SUBSTR(date, 1, INSTR(date, ' ') - 1) = ? AND SUBSTR(date, -4) = ? AND category = 'Income' ", (month, year))
+    
+    entries = cursor.fetchall()
+    if entries:
+        return entries
+    conn.close()
+
+# Get expense list in current month and year
+def get_expense_list(month, year):
+    conn = sqlite3.connect(db_file)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM entries WHERE SUBSTR(date, 1, INSTR(date, ' ') - 1) = ? AND SUBSTR(date, -4) = ? AND category = 'Expense' ", (month, year))
+    
+    entries = cursor.fetchall()
+    if entries:
+        return entries
+    conn.close()
+    

@@ -1,5 +1,7 @@
 import tkinter as tk
 import db
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from calc import Calculator
 from currency_conv import CurrencyConverter
 from tkinter import ttk, messagebox
@@ -23,6 +25,7 @@ class StartUp(tk.Tk):
         x = (screen_width - window_width) // 2
         y = (screen_height - window_height) // 2
         self.geometry("+{}+{}".format(x, y))
+        
 
         # Call methods
         self.create_widgets()
@@ -93,6 +96,8 @@ class MyApp(tk.Tk):
 
         # Check if Database exist, if not, create database file where the py file is located.
         db.create_database()
+        self.chart_open = False
+        self.protocol("WM_DELETE_WINDOW", self.exit_program)
         
         # Call Methods
         self.create_widgets()
@@ -100,7 +105,7 @@ class MyApp(tk.Tk):
         self.update_total_balance()
         
     def create_widgets(self):
-        # Frames
+        # Main Frames
         self.top_frame = tk.Frame(self, width=900, height=130, bg="#102C57")
         self.mid_frame = tk.Frame(self, width=900, height=400, bg="#EADBC8")
         self.chart_frame = tk.Frame(self, width=900, height=470, bg="#EADBC8")
@@ -108,21 +113,22 @@ class MyApp(tk.Tk):
         
         self.menu_frame = tk.Frame(self, width=300, height=600, bg="#102C57", bd=4, relief=tk.GROOVE)
         
-        # Frames pos
+        # Main Frames pos
         self.top_frame.place(x=0, y=0)
         self.mid_frame.place(x=0, y=130)
         self.bot_frame.place(x=0, y=530)
 
-        # Date
+        # Date Lbl
         self.current_date = tk.StringVar()
         self.current_date.set(datetime.now().strftime("%B %d, %Y"))
 
         self.lbl_date = tk.Label(
             self.top_frame,
             textvariable=self.current_date,
-            font=("katibeh", 20, "bold"),
+            font=("katibeh", 18, "bold"),
             bg="#102C57",
-            fg="#fff"
+            fg="#fff", 
+            anchor="center"
         )
         
         # Lable for expense/income/balance
@@ -142,6 +148,7 @@ class MyApp(tk.Tk):
             fg="#fff"
         )
         
+        # Lable for expense/income/balance amount
         self.lbl_balance = tk.Label(
             self.top_frame,
             text="Balance",
@@ -208,7 +215,7 @@ class MyApp(tk.Tk):
         )
 
         # Top Frame Widgets pos
-        self.lbl_date.place(x=160, y=50)
+        self.lbl_date.place(x=140, y=50)
         self.lbl_expenses.place(x=440, y=30)
         self.lbl_income.place(x=580, y=30)
         self.lbl_balance.place(x=730, y=30)
@@ -219,8 +226,9 @@ class MyApp(tk.Tk):
 
         btn_menu.place(x=10, y=10)
 
-        self.btn_date_next.place(x=360, y=50)
-        self.btn_date_previous.place(x=100, y=50)
+        self.btn_date_next.place(x=320, y=50)
+        self.btn_date_previous.place(x=80, y=50)
+       
 
         # Mid Frame widgets
         # TreeView
@@ -246,8 +254,8 @@ class MyApp(tk.Tk):
         style = ttk.Style()
         style.theme_use("clam")
         style.configure("Custom.Treeview.Heading", font=("katibeh", 18))
-        style.configure("Custom.Treeview", font=("katibeh", 16), background="#EADBC8", fieldbackground="#EADBC8")
-        style.configure("Custom.Treeview", rowheight=30)
+        style.configure("Custom.Treeview", font=("katibeh", 18), background="#EADBC8", fieldbackground="#EADBC8")
+        style.configure("Custom.Treeview", rowheight=40)
 
         # Disable TreeView Heading Resizing and selection
         self.tv_tree_view.bind('<B1-Motion>', lambda event: 'break')
@@ -273,7 +281,7 @@ class MyApp(tk.Tk):
         
         btn_edit.place(x=810, y=330)
 
-        # Bot Frame
+        # Bot Frame widgets
         btn_records = tk.Button(
             self.bot_frame,
             text="🧾",
@@ -308,53 +316,6 @@ class MyApp(tk.Tk):
         self.btn_add.place(x=400, y=0)
         btn_chart.place(x=520, y=0)
         
-        # Chart Widgets
-        months = [
-            'January',
-            'February',
-            'March',
-            'April',
-            'May',
-            'June',
-            'July',
-            'August',
-            'September',
-            'October',
-            'November',
-            'December'
-        ]
-        
-        year = []
-        
-        current_month_number = datetime.now().month
-        current_month_name = datetime.now().strftime('%B')
-        current_year = datetime.now().year
-        current_year_str = str(current_year)
-        
-        year.append(current_year_str) if current_year_str not in year else None
-
-            
-        self.chart_month = ttk.Combobox(
-            self.chart_frame,
-            values=months,
-            font=("katibeh", 16),
-            width=16,
-            state="readonly"
-        )
-        self.chart_month.set(current_month_name)
-        
-        self.chart_year = ttk.Combobox(
-            self.chart_frame,
-            values=year,
-            font=("katibeh", 16),
-            width=12,
-            state="readonly"
-        )
-        self.chart_year.set(current_year_str)
-        
-        # Chart Frame Widgets pos
-        self.chart_month.place(x=20, y=20)
-        self.chart_year.place(x=250, y=20)
                 
         # Menu Sidebar widgets
         btn_sidebar_menu_back = tk.Button(
@@ -460,7 +421,7 @@ class MyApp(tk.Tk):
             borderwidth=0,
             anchor="w",
             relief="flat",
-            command= self.destroy
+            command=self.exit_program
         )
         
         # Create Bindings For top, mid, bot frame and widgets to close menu sidebar after off focus
@@ -500,7 +461,7 @@ class MyApp(tk.Tk):
     def show_records(self):
         self.mid_frame.place(x=0, y=130)
         self.top_frame.config(height=130)
-        self.lbl_date.place(x=160, y=50)
+        self.lbl_date.place(x=140, y=50)
         self.lbl_expenses.place(x=440, y=30)
         self.lbl_income.place(x=580, y=30)
         self.lbl_balance.place(x=730, y=30)
@@ -509,12 +470,28 @@ class MyApp(tk.Tk):
         self.lbl_income_amount.place(x=580, y=60)
         self.lbl_amount_amount.place(x=730, y=60)
 
-        self.btn_date_next.place(x=360, y=50)
-        self.btn_date_previous.place(x=100, y=50)
+        self.btn_date_next.place(x=320, y=50)
+        self.btn_date_previous.place(x=80, y=50)
         
         self.btn_add.config(state="normal")
         
+        long_char_dates = ["January", "February", "August", "September", "October", "November", "December"]
+
+        if self.current_date.get().split()[0] in long_char_dates:
+            self.btn_date_next.place(x=370, y=50)
+        else:
+            self.lbl_date.place(x=140, y=50)
+            self.btn_date_next.place(x=320, y=50)
+        
+        self.close_chart()
         self.chart_frame.place_forget()
+
+        
+        style = ttk.Style()
+        style.theme_use("clam")
+        style.configure("Custom.Treeview.Heading", font=("katibeh", 18))
+        style.configure("Custom.Treeview", font=("katibeh", 18), background="#EADBC8", fieldbackground="#EADBC8")
+        style.configure("Custom.Treeview", rowheight=40)
         
     
     def show_chart(self):
@@ -534,11 +511,137 @@ class MyApp(tk.Tk):
         for widget in widgets:
             widget.place_forget()
         
+        # Disable Add Entry Btn
         self.btn_add.config(state="disabled")
+        
+        # Decrease Top Frame Height
         self.top_frame.config(height=60)
         
-        # Widgets pos
+        # Frame pos
         self.chart_frame.place(x=0, y=60)
+        
+        # Chart Frame Widgets
+        months = [
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December'
+        ]
+        
+        year = []
+        
+        current_month_number = datetime.now().month
+        current_month_name = datetime.now().strftime('%B')
+        current_year = datetime.now().year
+        current_year_str = str(current_year)
+        
+        # Add year to the list for Combobox selection
+        year.append(current_year_str) if current_year_str not in year else None
+   
+        self.chart_month = ttk.Combobox(
+            self.chart_frame,
+            values=months,
+            font=("katibeh", 16),
+            width=16,
+            state="readonly"
+        )
+        self.chart_month.set(current_month_name)
+        self.chart_month.bind("<<ComboboxSelected>>", self.create_chart_and_add_entries)
+        
+        self.chart_year = ttk.Combobox(
+            self.chart_frame,
+            values=year,
+            font=("katibeh", 16),
+            width=12,
+            state="readonly"
+        )
+        self.chart_year.set(current_year_str)
+        self.chart_year.bind("<<ComboboxSelected>>", self.create_chart_and_add_entries)
+        
+        # Chart Frame Widgets pos
+        self.chart_month.place(x=20, y=20)
+        self.chart_year.place(x=250, y=20)
+        # Treeview Expense
+        lbl_expense = tk.Label(
+            self.chart_frame,
+            text="Expenses",
+            font=("katibeh", 18),
+            bg="#EADBC8"
+        ).place(x=480, y=10)
+        
+        self.tv_chart_expense = ttk.Treeview(
+            self.chart_frame,
+            columns=(1, 2),
+            show="headings",
+            height=9,
+            style="Custom.Treeview"
+        )        
+        
+        self.tv_chart_expense.column(1, anchor="w", stretch="No", width=110)
+        self.tv_chart_expense.column(2, anchor="w", stretch="No", width=110)
+        self.tv_chart_expense.heading(1, text="Name")
+        self.tv_chart_expense.heading(2, text="Amount")
+        
+        # Disable TreeView Heading Resizing and selection
+        self.tv_chart_expense.bind('<B1-Motion>', lambda event: 'break')
+        self.tv_chart_expense.bind("<ButtonRelease-1>", lambda event: self.tv_tree_view.selection_remove(self.tv_tree_view.selection()))
+
+        # TreeView Expense pos
+        self.tv_chart_expense.place(x=420, y=50)
+        
+        # Treeview Income
+        lbl_chart_income = tk.Label(
+            self.chart_frame,
+            text="Income",
+            font=("katibeh", 18),
+            bg="#EADBC8"
+        ).place(x=720, y=10)
+        
+        self.tv_chart_income = ttk.Treeview(
+            self.chart_frame,
+            columns=(1, 2),
+            show="headings",
+            height=9,
+            style="Custom.Treeview"
+        )
+        
+        self.tv_chart_income.column(1, anchor="w", stretch="No", width=110)
+        self.tv_chart_income.column(2, anchor="w", stretch="No", width=110)
+        self.tv_chart_income.heading(1, text="Name")
+        self.tv_chart_income.heading(2, text="Amount")
+        
+        # Disable TreeView Heading Resizing and selection
+        self.tv_chart_income.bind('<B1-Motion>', lambda event: 'break')
+        self.tv_chart_income.bind("<ButtonRelease-1>", lambda event: self.tv_tree_view.selection_remove(self.tv_tree_view.selection()))
+        
+        # TreeView Income pos
+        self.tv_chart_income.place(x=660, y=50)
+        
+        # Config TreeView Style
+        style = ttk.Style()
+        style.theme_use("clam")
+        style.configure("Custom.Treeview.Heading", font=("katibeh", 16))
+        style.configure("Custom.Treeview", font=("katibeh", 12), background="#EADBC8", fieldbackground="#EADBC8")
+        style.configure("Custom.Treeview", rowheight=40)
+    
+        # Create Chart and add List of Income and Expenses
+        # if chart have no data
+        self.lbl_no_data = tk.Label(
+            self.chart_frame,
+            text="No Data",
+            font=("katibeh", 30)
+        )
+        
+        self.create_chart_and_add_entries()
+        
         
     # App Window PopUps
     def add_entry_win(self):
@@ -819,6 +922,14 @@ class MyApp(tk.Tk):
         new_date = current - timedelta(days=1)
         self.current_date.set(new_date.strftime("%B %d, %Y"))
         
+        long_char_dates = ["January", "February", "August", "September", "October", "November", "December"]
+
+        if self.current_date.get().split()[0] in long_char_dates:
+            self.btn_date_next.place(x=370, y=50)
+        else:
+            self.lbl_date.place(x=140, y=50)
+            self.btn_date_next.place(x=320, y=50)
+        
         # Enable the "Next" button if it was disabled before
         self.btn_date_next.config(state="normal")
         self.load_entries()
@@ -829,6 +940,14 @@ class MyApp(tk.Tk):
         current = datetime.strptime(self.current_date.get(), "%B %d, %Y")
         new_date = current + timedelta(days=1)
         self.current_date.set(new_date.strftime("%B %d, %Y"))
+        
+        long_char_dates = ["January", "February", "August", "September", "October", "November", "December"]
+
+        if self.current_date.get().split()[0] in long_char_dates:
+            self.btn_date_next.place(x=370, y=50)
+        else:
+            self.lbl_date.place(x=140, y=50)
+            self.btn_date_next.place(x=320, y=50)
         
         # Check if the current date is today, if yes, disable the "Next" button
         today = datetime.now().strftime("%B %d, %Y")
@@ -928,12 +1047,15 @@ class MyApp(tk.Tk):
 
         if date and category and amount:
             try:
-                amount = float(amount)               
-                db.add_data_to_table(date, category, name, amount)
-                
-                self.add_window.destroy()
-                self.load_entries()
-                self.update_total_balance()
+                if len(amount) > 15:
+                    messagebox.showerror("Error", "Maximum digits (15) reached")
+                else:
+                    amount = float(amount)               
+                    db.add_data_to_table(date, category, name, amount)
+                    
+                    self.add_window.destroy()
+                    self.load_entries()
+                    self.update_total_balance()
                 
             except ValueError:
                 messagebox.showerror("Error", "Please enter a valid amount")
@@ -986,10 +1108,6 @@ class MyApp(tk.Tk):
         self.remove_frame.place_forget()
         self.update_frame.place(x=10, y=10)
         
-    # Load datas to update in Update entry window
-    def load_data_to_ent_in_update_window(self):
-        pass
-    
     # Remove Entry Window Enable/Disable Displayed Widgets
     def remove_window(self):
         self.update_frame.place_forget()
@@ -1010,11 +1128,97 @@ class MyApp(tk.Tk):
     
     def open_currency_converter(self):
         CurrencyConverter(self)
-                                 
+    
+    # Create Chart and Add entries into treeView in Chart Frame
+    def create_chart_and_add_entries(self, event=None):
+        total_income, total_expenses = db.get_income_expense_total(self.chart_month.get(), self.chart_year.get())
+        
+        if self.chart_open:
+            self.ax.clear()
+        else:
+            # Create a new figure and axis if the chart is not open
+            self.fig, self.ax = plt.subplots(figsize=(4, 4))  # Adjust the figsize to make the chart smaller
+            self.chart_open = True
+        
+        # Clear canvas if it's open
+        if hasattr(self, 'canvas'):
+            self.canvas.get_tk_widget().place_forget()
+        
+        # Create a canvas to display the Matplotlib chart
+        canvas = FigureCanvasTkAgg(self.fig, master=self.chart_frame)
+        
+        # Get Data and Set to No data if None
+        if total_income == 0 and total_expenses == 0:
+            # No data available, show the "No data" label
+            self.lbl_no_data.place(x=100, y=70)
+        else:
+            # Data available, hide the "No data" label
+            self.lbl_no_data.place_forget()
+            
+            expenses_percentage = (total_expenses / (total_expenses + total_income)) * 100
+            income_percentage = (total_income / (total_expenses + total_income)) * 100
+
+            # Create pie chart
+            labels = ['Expenses', 'Income']
+            sizes = [expenses_percentage, income_percentage]
+            colors = ['#ff9999', '#66b3ff']
+
+            self.ax.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140)
+            self.ax.axis('equal')
+            self.ax.set_title(f'Percentage of Expenses and Income in {self.chart_month.get()} {self.chart_year.get()}', fontsize=11)
+
+        canvas.get_tk_widget().place(x=10, y=60) # Position the chart 
+        canvas.draw()
+
+        # Insert Entries in the Expense/Income TreeView
+        income_list = db.get_income_list(self.chart_month.get(), self.chart_year.get())
+        expense_list = db.get_expense_list(self.chart_month.get(), self.chart_year.get())
+        
+        for record in self.tv_chart_income.get_children():
+            self.tv_chart_income.delete(record)
+            
+        for record in self.tv_chart_expense.get_children():
+            self.tv_chart_expense.delete(record)
+        
+        if income_list:   
+            for income in income_list:
+                name = income[3]
+                amount = income[4]
+                
+                formatted_amount = "+₱{:.2f}".format(abs(amount))
+                
+                formatted_entry = (name, formatted_amount)
+                self.tv_chart_income.insert('', 'end', values=formatted_entry, tags=(name))
+                self.tv_chart_income.tag_configure(name, foreground="#006400")
+        
+        if expense_list:
+            for expenses in expense_list:
+                name = expenses[3]
+                amount = expenses[4]
+                
+                formatted_amount = "-₱{:.2f}".format(abs(amount))
+                
+                formatted_entry = (name, formatted_amount)
+                self.tv_chart_expense.insert('', 'end', values=formatted_entry, tags=(name))
+                self.tv_chart_expense.tag_configure(name, foreground="#FF0000")
+            
+
+
+
+                                                         
+    def close_chart(self):
+        if self.chart_open:
+            plt.close(self.fig)
+            self.chart_open = False  
+    
+    def exit_program(self):
+        self.close_chart()
+        self.destroy()   
+                            
 # Call StartUp
-# app = StartUp()
-# app.mainloop()
+app = StartUp()
+app.mainloop()
 
 # Call Main Window
-win = MyApp()
-win.mainloop()
+# win = MyApp()
+# win.mainloop()
