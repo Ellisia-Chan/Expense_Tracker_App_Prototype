@@ -24,9 +24,7 @@ class CurrencyConverter:
             'Hong Kong dollar (HKD)': 7.81,
             'New Zealand dollar (NZD)': 1.66  
         }
-        
-        
-        
+    
         self.create_widgets()
         self.bind_number_buttons()
                
@@ -52,7 +50,7 @@ class CurrencyConverter:
             state="readonly"
         )
         self.from_currency.set(list(self.exchange_rate.keys())[0])
-        self.from_currency.bind("<<ComboboxSelected>>", self.calculate_rate)
+        self.from_currency.bind("<<ComboboxSelected>>", self.calculate_rate_from)
         
    
         self.to_currency = ttk.Combobox(
@@ -63,7 +61,7 @@ class CurrencyConverter:
             state="readonly"
         )
         self.to_currency.set(list(self.exchange_rate.keys())[6])
-        self.to_currency.bind("<<ComboboxSelected>>", self.calculate_rate)
+        self.to_currency.bind("<<ComboboxSelected>>", self.calculate_rate_to)
 
         # Ent
         self.ent_from_currency = tk.Entry(
@@ -72,14 +70,13 @@ class CurrencyConverter:
             width=26
         )
         self.ent_from_currency.config(validate="key", validatecommand=(self.ent_from_currency.register(lambda char: char.isdigit() or char == "" or char in "."), "%S"))
-        self.ent_from_currency.bind("<KeyRelease>", self.calculate_rate)
 
         self.ent_to_currency = tk.Entry(
             child_frame,
             font=("katibeh", 18),
             width=26,
-            state="readonly"
         )
+        self.ent_to_currency.config(validate="key", validatecommand=(self.ent_to_currency.register(lambda char: char.isdigit() or char == "" or char in "."), "%S"))
         
         # Btn
         # Back Btn
@@ -251,40 +248,66 @@ class CurrencyConverter:
             num_button.bind('<Button-1>', self.insert_number)
             
         self.btn_c.bind('<Button-1>', self.clear)
-        self.btn_del.bind('<Button-1>', self.delete)
-                   
+        self.btn_del.bind('<Button-1>', self.delete)       
+        
     def insert_number(self, event):
         # Get the currently focused entry
         focused_widget = self.app.focus_get()
-        
+
         # If it's an entry field, insert the corresponding number
         if isinstance(focused_widget, tk.Entry):
-            focused_widget.insert(tk.END, event.widget["text"])
-            self.calculate_rate()
+            cursor_pos = focused_widget.index(tk.INSERT)  # Get the cursor position
+            focused_widget.insert(cursor_pos, event.widget["text"])  # Insert the number at the cursor position
+
+            # Call the appropriate calculation method based on the focused entry field
+            if focused_widget == self.ent_from_currency:
+                self.calculate_rate_from()
+            elif focused_widget == self.ent_to_currency:
+                self.calculate_rate_to()
        
-    def calculate_rate(self, event=None):
+    def calculate_rate_from(self, event=None):
         from_currency = self.from_currency.get()
-        from_currency_amount = self.ent_from_currency.get()
         to_currency = self.to_currency.get()
-    
+        from_currency_amount = self.ent_from_currency.get()
+        
         if from_currency and to_currency and from_currency_amount.replace('.', '').isdigit():
             from_currency_amount = float(from_currency_amount)
-            # Fetch the exchange rate for both from_currency and to_currency from the exchange_rate dictionary
             exchange_rate_from = self.exchange_rate[from_currency]
-            exchange_rate_to = self.exchange_rate[to_currency]  
-            
-            # Convert the amount from from_currency to to_currency
+            exchange_rate_to = self.exchange_rate[to_currency]
+
             result = (from_currency_amount / exchange_rate_from) * exchange_rate_to
             
-            self.ent_to_currency.config(state="normal")
+            self.ent_to_currency.config(validate="none")
             self.ent_to_currency.delete(0, tk.END)
             self.ent_to_currency.insert(tk.END, "{:.2f}".format(result))
-            self.ent_to_currency.config(state="readonly")
+            self.ent_to_currency.config(validate="key")
         else:
-            self.ent_to_currency.config(state="normal")
+            self.ent_to_currency.config(validate="none")
             self.ent_to_currency.delete(0, tk.END)
-            self.ent_to_currency.config(state="readonly")
-                              
+            self.ent_to_currency.config(validate="key")
+            
+            
+    def calculate_rate_to(self, event=None):
+        from_currency = self.from_currency.get()
+        to_currency = self.to_currency.get()
+        to_currency_amount = self.ent_to_currency.get()
+        
+        if from_currency and to_currency and to_currency_amount.replace('.', '').isdigit():
+            to_currency_amount = float(to_currency_amount)
+            exchange_rate_from = self.exchange_rate[from_currency]
+            exchange_rate_to = self.exchange_rate[to_currency]
+
+            result = (to_currency_amount / exchange_rate_to) * exchange_rate_from
+            
+            self.ent_from_currency.config(validate="none")
+            self.ent_from_currency.delete(0, tk.END)
+            self.ent_from_currency.insert(tk.END, "{:.2f}".format(result))
+            self.ent_from_currency.config(validate="key")
+        else:
+            self.ent_from_currency.config(validate="none")
+            self.ent_from_currency.delete(0, tk.END)
+            self.ent_from_currency.config(validate="key")
+                          
     def clear(self, event=None):
         focused_widget = self.app.focus_get()
 
@@ -293,14 +316,24 @@ class CurrencyConverter:
             self.ent_from_currency.config(validate="none")
             focused_widget.delete(0, tk.END)
             self.ent_from_currency.config(validate="key")
-            self.calculate_rate()
+            self.calculate_rate_from()
+            
+        if isinstance(focused_widget, tk.Entry) and focused_widget == self.ent_to_currency:
+            self.ent_from_currency.config(validate="none")
+            focused_widget.delete(0, tk.END)
+            self.ent_from_currency.config(validate="key")
+            self.calculate_rate_to()
             
     def delete(self, event=None): 
         focused_widget = self.app.focus_get()
         
         if isinstance(focused_widget, tk.Entry) and focused_widget == self.ent_from_currency and focused_widget.get():
             focused_widget.delete(len(focused_widget.get()) - 1)
-            self.calculate_rate()
+            self.calculate_rate_from()
+            
+        if isinstance(focused_widget, tk.Entry) and focused_widget == self.ent_to_currency and focused_widget.get():
+            focused_widget.delete(len(focused_widget.get()) - 1)
+            self.calculate_rate_to()
                                      
     def back_to_main(self):
         self.win.destroy()   
