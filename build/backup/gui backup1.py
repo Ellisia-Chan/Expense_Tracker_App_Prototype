@@ -2,7 +2,7 @@
 # https://github.com/ParthJadhav/Tkinter-Designer
 
 from pathlib import Path
-from function_list import create_new_window
+from build.function_list import create_new_window
 from tkinter import Tk, Canvas, Button, PhotoImage
 
 
