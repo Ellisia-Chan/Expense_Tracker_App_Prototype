@@ -35,7 +35,7 @@ Currency Converter: <br><br>
 
 
 #
-Developer: My Biggest Python Project
+Developer: My Biggest Python Project :)
 
 Color Palette:
 https://colorhunt.co/palette/fefaf6eadbc8dac0a3102c57
